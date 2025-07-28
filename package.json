@@ -1,0 +1,17 @@
+{
+  "name": "agile-platform-monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm --prefix backend run start:dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "start": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "seed": "npm --prefix backend run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
