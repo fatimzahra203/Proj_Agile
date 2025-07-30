@@ -1,3 +1,4 @@
+/* Ensure Tailwind CSS is properly set up with PostCSS or a compatible build tool */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

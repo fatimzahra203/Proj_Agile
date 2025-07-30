@@ -8,15 +8,16 @@ import { TasksModule } from './tasks/tasks.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'agile',
-      autoLoadEntities: true,
-      synchronize: true, // TODO: Set to false in production
-    }),
+  type: 'mysql',
+  host: 'localhost',
+  port: 3306,
+  username: 'root',
+  password: '',
+  database: 'agile',
+  autoLoadEntities: true,
+  synchronize: true,
+  entities: ['dist/**/*.entity{.ts,.js}'],
+}),
     AuthModule,
     UsersModule,
     ProjectsModule,

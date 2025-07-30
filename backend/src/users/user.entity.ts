@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { Project } from '../projects/project.entity';
 import { Task } from '../tasks/task.entity';
 
@@ -11,6 +19,9 @@ export enum UserRole {
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  username: string;
 
   @Column({ unique: true })
   email: string;
@@ -26,4 +37,14 @@ export class User {
 
   @OneToMany(() => Task, (task) => task.assignee)
   tasks: Task[];
+
+  // 👉 Hash password before saving
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.password) {
+      const salt = await bcrypt.genSalt();
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+  }
 }

@@ -1,9 +1,14 @@
+// users.module.ts
 import { Module } from '@nestjs/common';
-// TODO: Add UsersService, controller, and providers
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
 
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
+  imports: [TypeOrmModule.forFeature([User])],
+  providers: [UsersService],
+  controllers: [UsersController],
+  exports: [TypeOrmModule], // Export TypeOrmModule to make UserRepository available
 })
 export class UsersModule {}
