@@ -1,15 +1,10 @@
 import { Repository } from 'typeorm';
-import { RegisterDto } from './dto';
-import { LoginDto } from './dto';
+import { RegisterDto, LoginDto } from './dto';
 import { User } from '../users/user.entity';
 export declare class AuthService {
     private userRepository;
     constructor(userRepository: Repository<User>);
     register(registerDto: RegisterDto): Promise<{
-        success: boolean;
-        message: string;
-        user?: undefined;
-    } | {
         success: boolean;
         message: string;
         user: {
@@ -20,10 +15,6 @@ export declare class AuthService {
         };
     }>;
     login(loginDto: LoginDto): Promise<{
-        success: boolean;
-        message: string;
-        user?: undefined;
-    } | {
         success: boolean;
         message: string;
         user: {

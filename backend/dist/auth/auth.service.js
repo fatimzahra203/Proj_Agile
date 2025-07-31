@@ -23,22 +23,35 @@ let AuthService = class AuthService {
         this.userRepository = userRepository;
     }
     async register(registerDto) {
-        const { username, email, password, role } = registerDto;
-        const existingUser = await this.userRepository.findOne({ where: { email } });
-        if (existingUser) {
-            return { success: false, message: 'Email already exists' };
+        try {
+            console.log('Register DTO:', registerDto);
+            const { username, email, password, role } = registerDto;
+            const existingUser = await this.userRepository.findOne({ where: { email } });
+            if (existingUser) {
+                throw new common_1.BadRequestException('Email already exists');
+            }
+            const user = this.userRepository.create({ username, email, password, role });
+            await this.userRepository.save(user);
+            return { success: true, message: 'User registered', user: { id: user.id, email, username, role } };
         }
-        const user = this.userRepository.create({ username, email, password, role });
-        await this.userRepository.save(user);
-        return { success: true, message: 'User registered', user: { id: user.id, email, username, role } };
+        catch (error) {
+            console.error('Registration error:', error);
+            throw new common_1.BadRequestException(error.message || 'Registration failed');
+        }
     }
     async login(loginDto) {
-        const { email, password } = loginDto;
-        const user = await this.userRepository.findOne({ where: { email } });
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return { success: false, message: 'Invalid credentials' };
+        try {
+            const { email, password } = loginDto;
+            const user = await this.userRepository.findOne({ where: { email } });
+            if (!user || !(await bcrypt.compare(password, user.password))) {
+                throw new common_1.BadRequestException('Invalid credentials');
+            }
+            return { success: true, message: 'Login successful', user: { id: user.id, email, username: user.username, role: user.role } };
         }
-        return { success: true, message: 'Login successful', user: { id: user.id, email, username: user.username, role: user.role } };
+        catch (error) {
+            console.error('Login error:', error);
+            throw new common_1.BadRequestException(error.message || 'Login failed');
+        }
     }
 };
 exports.AuthService = AuthService;

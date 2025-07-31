@@ -7,7 +7,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:3000/auth/login', {
+    const response = await fetch('http://localhost:3001/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -16,6 +16,7 @@ const Login: React.FC = () => {
     setMessage(data.message || (data.statusCode ? data.message[0] : ''));
     if (data.success) {
       console.log('Login successful', data.user);
+      window.location.href = '/kanban';
     }
   };
 

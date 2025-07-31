@@ -6,10 +6,6 @@ export declare class AuthController {
     register(registerDto: RegisterDto): Promise<{
         success: boolean;
         message: string;
-        user?: undefined;
-    } | {
-        success: boolean;
-        message: string;
         user: {
             id: number;
             email: string;
@@ -18,10 +14,6 @@ export declare class AuthController {
         };
     }>;
     login(loginDto: LoginDto): Promise<{
-        success: boolean;
-        message: string;
-        user?: undefined;
-    } | {
         success: boolean;
         message: string;
         user: {
