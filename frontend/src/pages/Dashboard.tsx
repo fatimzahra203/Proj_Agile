@@ -2,13 +2,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-
 const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
       <header className="w-full max-w-7xl flex justify-between items-center mb-6">
         <div className="flex items-center">
-          <img src='' alt="AgilePM Logo" className="h-10 mr-2" />
+          <img src='\logo2.png' alt="AgilePM Logo" className="h-20 mr-2" />
           <h1 className="text-2xl font-bold text-gray-800">AgilePM Platform</h1>
         </div>
         <div>
