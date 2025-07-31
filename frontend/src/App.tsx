@@ -7,10 +7,12 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 
 
+
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/kanban" element={<KanbanBoard />} />
       <Route path="/calendar" element={<CalendarView />} />
       <Route path="/signup" element={<SignUp />} />
