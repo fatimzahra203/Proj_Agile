@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiCalendar, FiList, FiUsers, FiFile, FiPlus, FiCheck } from 'react-icons/fi';
+import { FiCalendar, FiList, FiUsers, FiPlus, FiCheck } from 'react-icons/fi';
 
 interface TeamMember {
   id: string;
@@ -13,14 +13,6 @@ interface Task {
   title: string;
   dueDate: string;
   completed: boolean;
-}
-
-interface Notification {
-  id: string;
-  type: 'comment' | 'milestone' | 'joined' | 'deadline';
-  message: string;
-  project: string;
-  time: string;
 }
 
 interface Project {
@@ -87,12 +79,6 @@ const Dashboard = () => {
     { id: '3', title: 'Prepare client presentation', dueDate: 'in 2 days', completed: false },
     { id: '4', title: 'Update resource allocation', dueDate: 'in 3 days', completed: false },
   ]);
-  const [notifications, setNotifications] = useState<Notification[]>([
-    { id: '1', type: 'comment', message: 'New comment on', project: 'Website Redesign', time: '1 hour ago' },
-    { id: '2', type: 'milestone', message: 'Mobile App completed', project: '', time: '3 hours ago' },
-    { id: '3', type: 'joined', message: 'James Wilson joined', project: 'UX design', time: 'Yesterday' },
-    { id: '4', type: 'deadline', message: 'API Integration approaching', project: '', time: 'in 2 days' },
-  ]);
   const [activeView, setActiveView] = useState<'weekly' | 'monthly'>('weekly');
   
   // Generate chart data based on the active view
@@ -147,7 +133,7 @@ const Dashboard = () => {
       <main className="max-w-7xl w-full mx-auto px-4 pb-8">
         
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Tasks Due Card */}
           <div className="bg-white rounded-lg shadow-sm p-4">
             <h3 className="text-sm font-medium text-gray-700 mb-3">Tasks Due Today</h3>
@@ -201,9 +187,9 @@ const Dashboard = () => {
         </div>
 
         {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Left Column - Project Progress */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-5">
             {/* Project Progress Section */}
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <div className="flex justify-between items-center mb-6">
@@ -323,103 +309,45 @@ const Dashboard = () => {
             
             {/* Quick Links Section */}
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Links</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <Link 
-                  to="/calendar" 
-                  state={{ projectData: project }}
-                  className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
-                >
-                  <FiCalendar size={24} className="mb-2" />
-                  <span className="text-sm font-medium">Calendar View</span>
-                </Link>
-                <Link 
-                  to="/kanban" 
-                  state={{ projectData: project }}
-                  className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
-                >
-                  <FiList size={24} className="mb-2" />
-                  <span className="text-sm font-medium">Kanban Board</span>
-                </Link>
-                <Link 
-                  to="/team" 
-                  state={{ projectData: project }}
-                  className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
-                >
-                  <FiUsers size={24} className="mb-2" />
-                  <span className="text-sm font-medium">Team Management</span>
-                </Link>
-                <Link 
-                  to="/reports" 
-                  className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
-                >
-                  <FiFile size={24} className="mb-2" />
-                  <span className="text-sm font-medium">Reports</span>
-                </Link>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Quick Links</h3>
+              <div className="flex justify-center">
+                <div className="grid grid-cols-3 gap-6 max-w-2xl">
+                  <Link 
+                    to="/calendar" 
+                    state={{ projectData: project }}
+                    className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
+                  >
+                    <FiCalendar size={28} className="mb-2" />
+                    <span className="text-sm font-medium">Calendar View</span>
+                  </Link>
+                  <Link 
+                    to="/kanban" 
+                    state={{ projectData: project }}
+                    className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
+                  >
+                    <FiList size={28} className="mb-2" />
+                    <span className="text-sm font-medium">Kanban Board</span>
+                  </Link>
+                  <Link 
+                    to="/team" 
+                    state={{ projectData: project }}
+                    className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
+                  >
+                    <FiUsers size={28} className="mb-2" />
+                    <span className="text-sm font-medium">Team Management</span>
+                  </Link>
+                </div>
               </div>
             </div>
             
-            {/* Team Activity */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Team Activity</h3>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-purple-400 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs text-white font-medium">ER</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="font-medium">Emily Rodriguez</span>
-                        <span className="text-gray-600 text-sm"> completed the UI design task</span>
-                      </div>
-                      <span className="text-xs text-gray-500">2 hours ago</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs text-white font-medium">DK</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="font-medium">David Kim</span>
-                        <span className="text-gray-600 text-sm"> added comments to API documentation</span>
-                      </div>
-                      <span className="text-xs text-gray-500">4 hours ago</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-blue-400 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs text-white font-medium">SM</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="font-medium">Sophia Martinez</span>
-                        <span className="text-gray-600 text-sm"> created a new test case</span>
-                      </div>
-                      <span className="text-xs text-gray-500">Yesterday</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column - My Tasks & Notifications */}
-          <div className="space-y-6">
+          {/* Right Column - My Tasks */}
+          <div className="space-y-5">
             {/* My Tasks */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">My Tasks</h3>
-                <button className="bg-blue-500 text-white rounded-lg p-1.5 hover:bg-blue-600">
-                  <FiPlus size={18} />
-                </button>
+            <div className="bg-white rounded-lg shadow-sm p-5">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 text-center">My Tasks</h3>
               </div>
               
               <div className="space-y-2">
@@ -452,57 +380,37 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
-            
-            {/* Recent Notifications */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Notifications</h3>
-              
-              <div className="space-y-4">
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-blue-100 flex-shrink-0"></div>
-                  <div>
-                    <p className="text-sm">
-                      <span className="font-medium">New comment</span> on <span className="font-medium">Website Redesign</span>
-                    </p>
-                    <p className="text-xs text-gray-500">Website</p>
+
+            {/* Team Activity */}
+            <div className="bg-white rounded-lg shadow-sm p-5">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">Recent Team Activity</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm p-2 hover:bg-gray-50 rounded-lg">
+                  <div className="h-7 w-7 rounded-full bg-purple-400 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs text-white font-medium">ER</span>
                   </div>
+                  <span className="font-medium">Emily Rodriguez</span>
+                  <span className="text-gray-600"> completed the UI design task</span>
+                  <span className="text-xs text-gray-500 ml-auto">2h ago</span>
                 </div>
                 
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-green-100 flex-shrink-0"></div>
-                  <div>
-                    <p className="text-sm">
-                      <span className="font-medium">Mobile App completed</span>
-                    </p>
-                    <p className="text-xs text-gray-500">milestone</p>
+                <div className="flex items-center gap-2 text-sm p-2 hover:bg-gray-50 rounded-lg">
+                  <div className="h-7 w-7 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs text-white font-medium">DK</span>
                   </div>
+                  <span className="font-medium">David Kim</span>
+                  <span className="text-gray-600"> added comments to API docs</span>
+                  <span className="text-xs text-gray-500 ml-auto">4h ago</span>
                 </div>
                 
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-yellow-100 flex-shrink-0"></div>
-                  <div>
-                    <p className="text-sm">
-                      <span className="font-medium">James Wilson joined</span> the team
-                    </p>
-                    <p className="text-xs text-gray-500">joined</p>
+                <div className="flex items-center gap-2 text-sm p-2 hover:bg-gray-50 rounded-lg">
+                  <div className="h-7 w-7 rounded-full bg-blue-400 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs text-white font-medium">SM</span>
                   </div>
+                  <span className="font-medium">Sophia Martinez</span>
+                  <span className="text-gray-600"> created a new test case</span>
+                  <span className="text-xs text-gray-500 ml-auto">Yesterday</span>
                 </div>
-                
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-red-100 flex-shrink-0"></div>
-                  <div>
-                    <p className="text-sm">
-                      <span className="font-medium">API Integration</span> deadline approaching
-                    </p>
-                    <p className="text-xs text-gray-500">deadline</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-4 text-center">
-                <button className="text-blue-500 text-sm font-medium hover:text-blue-700">
-                  View all notifications
-                </button>
               </div>
             </div>
           </div>
