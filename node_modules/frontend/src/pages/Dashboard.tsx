@@ -164,7 +164,7 @@ const Dashboard = () => {
                     title={member.name}
                   >
                     <span className="text-xs text-white font-medium">
-                      {member.name.split(' ').map(n => n[0]).join('')}
+                      {member.name ? member.name.split(' ').map(n => n[0]).join('') : '?'}
                     </span>
                   </div>
                 ))}

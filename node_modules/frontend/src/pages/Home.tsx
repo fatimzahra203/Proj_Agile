@@ -86,7 +86,7 @@ const Home: React.FC = () => {
   };
 
   const handleAddProject = () => {
-    navigate('/project-form');
+    navigate('/projects/new');
   };
 
   return (
