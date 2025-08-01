@@ -144,7 +144,8 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl w-full mx-auto px-4 pb-8">        
+      <main className="max-w-7xl w-full mx-auto px-4 pb-8">
+        
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Tasks Due Card */}

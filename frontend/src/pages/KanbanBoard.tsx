@@ -18,7 +18,7 @@ import {
   arrayMove, 
   SortableContext, 
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy
+  verticalListSortingStrategy 
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useSortable } from '@dnd-kit/sortable';
@@ -101,18 +101,13 @@ const Column: React.FC<{
         data-column-id={id}
       >
         <div className="space-y-2 min-h-[100px]">
-          <SortableContext 
-            items={tasks.map(task => task.id)} 
-            strategy={verticalListSortingStrategy}
-          >
-            {tasks.map(task => (
-              <SortableTask 
-                key={task.id} 
-                task={task} 
-                onDragEnd={(taskId) => onDragEnd(taskId, id)} 
-              />
-            ))}
-          </SortableContext>
+          {tasks.map(task => (
+            <SortableTask 
+              key={task.id} 
+              task={task} 
+              onDragEnd={(taskId) => onDragEnd(taskId, id)} 
+            />
+          ))}
           {isOver && tasks.length === 0 && (
             <div className="h-20 border-2 border-dashed border-blue-300 rounded-md flex items-center justify-center">
               <p className="text-blue-400 text-sm">Drop here</p>
@@ -132,9 +127,9 @@ const TaskCard: React.FC<{
   return (
     <div className={`bg-white p-3 rounded shadow-sm border ${
       isDragging 
-        ? 'border-blue-400 ring-1 ring-blue-300 ring-opacity-50 bg-blue-50' 
+        ? 'border-blue-400 shadow-md ring-2 ring-blue-300 ring-opacity-50' 
         : 'border-gray-200'
-    } cursor-grab active:cursor-grabbing transition-colors duration-200`}>
+    } cursor-grab active:cursor-grabbing transition-shadow duration-200`}>
       <div className="font-medium text-gray-800">{task.content}</div>
       {task.assignee && (
         <div className="mt-2 flex items-center">
@@ -176,7 +171,7 @@ const SortableTask: React.FC<{
       style={style}
       {...attributes}
       {...listeners}
-      className={`transition-shadow duration-200 ${isSortableDragging || isDragging ? 'shadow-md' : ''}`}
+      className={`transition-all duration-200 ease-in-out ${isSortableDragging || isDragging ? 'scale-105 shadow-xl' : ''}`}
     >
       <TaskCard task={task} isDragging={isDragging || isSortableDragging} />
     </div>
@@ -273,26 +268,42 @@ const KanbanBoard: React.FC = () => {
     const activeId = String(active.id);
     const overId = String(over.id);
     
+    // Early return if no change
+    if (activeId === overId) return;
+    
     // Find the source task
     const activeTask = tasks.find(t => t.id === activeId);
     if (!activeTask) return;
     
-    // Determine the target column based on the over.id
-    // Format of over.id is either a task id or columnId-column
+    // Determine the target column
     let targetColumnId = '';
     
-    if (overId.includes('-column')) {
-      // Dropped directly on a column
-      targetColumnId = overId.split('-column')[0];
-    } else {
-      // Dropped on another task, find that task's column
+    // Check if dropped on a column element directly
+    const overElement = document.elementFromPoint(event.activatorEvent.clientX, event.activatorEvent.clientY);
+    if (overElement) {
+      // Find the nearest column
+      const column = overElement.closest('[data-column-id]');
+      if (column) {
+        const columnId = column.getAttribute('data-column-id');
+        if (columnId) {
+          targetColumnId = columnId;
+        }
+      }
+    }
+    
+    // If we couldn't find the column from the DOM, try to determine from the over.id or using the task's column
+    if (!targetColumnId) {
       const overTask = tasks.find(t => t.id === overId);
       targetColumnId = overTask ? overTask.column : '';
     }
     
-    // If we have a valid target column and it's different from the current column
+    // If we still don't have a target column, use the first column from our columns list
+    if (!targetColumnId && columns.length > 0) {
+      targetColumnId = columns[0].id;
+    }
+    
+    // If we have a valid target column, update the task
     if (targetColumnId && targetColumnId !== activeTask.column) {
-      console.log(`Moving task ${activeId} from ${activeTask.column} to ${targetColumnId}`);
       setTasks(tasks.map(task => 
         task.id === activeId ? { ...task, column: targetColumnId } : task
       ));
@@ -357,9 +368,9 @@ const KanbanBoard: React.FC = () => {
             ))}
 
             {/* Drag Overlay - what appears when dragging */}
-            <DragOverlay adjustScale={false} dropAnimation={dropAnimation}>
+            <DragOverlay adjustScale={true} dropAnimation={dropAnimation}>
               {activeId && activeTask ? (
-                <div>
+                <div className="transform scale-105">
                   <TaskCard task={activeTask} isDragging={true} />
                 </div>
               ) : null}

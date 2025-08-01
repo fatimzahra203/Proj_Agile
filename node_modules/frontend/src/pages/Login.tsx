@@ -16,7 +16,7 @@ const Login: React.FC = () => {
     setMessage(data.message || (data.statusCode ? data.message[0] : ''));
     if (data.success) {
       console.log('Login successful', data.user);
-      window.location.href = '/';
+      window.location.href = '/home';
     }
   };
 
