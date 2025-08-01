@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import Home from './pages/Home';
 import KanbanBoard from './pages/KanbanBoard';
 import Projectform from './pages/ProjectForm';
+import TeamManagement from './pages/TeamManagement';
 function App() {
   return (
     <BrowserRouter>

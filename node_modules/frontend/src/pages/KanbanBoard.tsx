@@ -127,9 +127,9 @@ const TaskCard: React.FC<{
   return (
     <div className={`bg-white p-3 rounded shadow-sm border ${
       isDragging 
-        ? 'border-blue-400 shadow-md ring-2 ring-blue-300 ring-opacity-50' 
+        ? 'border-blue-400 shadow-md border-2 border-blue-300' 
         : 'border-gray-200'
-    } cursor-grab active:cursor-grabbing transition-shadow duration-200`}>
+    } cursor-grab active:cursor-grabbing transition-colors duration-100`}>
       <div className="font-medium text-gray-800">{task.content}</div>
       {task.assignee && (
         <div className="mt-2 flex items-center">
@@ -171,7 +171,7 @@ const SortableTask: React.FC<{
       style={style}
       {...attributes}
       {...listeners}
-      className={`transition-all duration-200 ease-in-out ${isSortableDragging || isDragging ? 'scale-105 shadow-xl' : ''}`}
+      className={`transition-all duration-200 ease-in-out ${isSortableDragging || isDragging ? 'shadow-md' : ''}`}
     >
       <TaskCard task={task} isDragging={isDragging || isSortableDragging} />
     </div>
@@ -212,7 +212,9 @@ const KanbanBoard: React.FC = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Minimum drag distance before activation (in pixels)
+        distance: 5, // Minimum drag distance before activation (in pixels)
+        delay: 150, // Small delay to avoid accidental drags
+        tolerance: 5, // How much movement is allowed during delay
       },
     }),
     useSensor(KeyboardSensor, {
@@ -268,9 +270,6 @@ const KanbanBoard: React.FC = () => {
     const activeId = String(active.id);
     const overId = String(over.id);
     
-    // Early return if no change
-    if (activeId === overId) return;
-    
     // Find the source task
     const activeTask = tasks.find(t => t.id === activeId);
     if (!activeTask) return;
@@ -278,29 +277,38 @@ const KanbanBoard: React.FC = () => {
     // Determine the target column
     let targetColumnId = '';
     
-    // Check if dropped on a column element directly
-    const overElement = document.elementFromPoint(event.activatorEvent.clientX, event.activatorEvent.clientY);
-    if (overElement) {
-      // Find the nearest column
-      const column = overElement.closest('[data-column-id]');
-      if (column) {
-        const columnId = column.getAttribute('data-column-id');
-        if (columnId) {
-          targetColumnId = columnId;
-        }
-      }
-    }
-    
-    // If we couldn't find the column from the DOM, try to determine from the over.id or using the task's column
-    if (!targetColumnId) {
+    // Check if the over.id contains "column" which means we're directly over a column
+    if (overId.includes('-column')) {
+      // Extract column id from "columnId-column" format
+      targetColumnId = overId.replace('-column', '');
+    } else {
+      // If dropped on a task, get that task's column
       const overTask = tasks.find(t => t.id === overId);
       targetColumnId = overTask ? overTask.column : '';
+      
+      // If we still don't have a target column, try to get it from DOM
+      if (!targetColumnId) {
+        // Check if dropped on a column element directly
+        const overElement = document.elementFromPoint(event.activatorEvent.clientX, event.activatorEvent.clientY);
+        if (overElement) {
+          // Find the nearest column
+          const column = overElement.closest('[data-column-id]');
+          if (column) {
+            const columnId = column.getAttribute('data-column-id');
+            if (columnId) {
+              targetColumnId = columnId;
+            }
+          }
+        }
+      }
     }
     
     // If we still don't have a target column, use the first column from our columns list
     if (!targetColumnId && columns.length > 0) {
       targetColumnId = columns[0].id;
     }
+    
+    console.log(`Moving task ${activeId} from ${activeTask.column} to ${targetColumnId}`);
     
     // If we have a valid target column, update the task
     if (targetColumnId && targetColumnId !== activeTask.column) {
@@ -368,9 +376,9 @@ const KanbanBoard: React.FC = () => {
             ))}
 
             {/* Drag Overlay - what appears when dragging */}
-            <DragOverlay adjustScale={true} dropAnimation={dropAnimation}>
+            <DragOverlay adjustScale={false} dropAnimation={dropAnimation}>
               {activeId && activeTask ? (
-                <div className="transform scale-105">
+                <div>
                   <TaskCard task={activeTask} isDragging={true} />
                 </div>
               ) : null}
