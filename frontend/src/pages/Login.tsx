@@ -16,7 +16,7 @@ const Login: React.FC = () => {
     setMessage(data.message || (data.statusCode ? data.message[0] : ''));
     if (data.success) {
       console.log('Login successful', data.user);
-      window.location.href = '/dashboard';
+      window.location.href = '/';
     }
   };
 
@@ -26,12 +26,9 @@ const Login: React.FC = () => {
         {/* Logo + Heading */}
         <div className="mb-6 text-center">
           <div className="flex justify-center items-center mb-2">
-            <div className="bg-blue-600 w-3 h-3 rounded-sm mr-1"></div>
-            <div className="bg-blue-600 w-3 h-3 rounded-sm mr-1"></div>
-            <div className="bg-blue-600 w-3 h-3 rounded-sm"></div>
+            <img src="/logo2.png" alt="AgileFlow Logo" className="h-20 w-20 mr-2" />
           </div>
-          <h1 className="text-2xl font-bold text-blue-700">AgilePM Platform</h1>
-          <p className="text-gray-500 mt-1">Welcome Back</p>
+          <h1 className="text-2xl font-bold text-blue-700">AgileFlow</h1>
           <p className="text-sm text-gray-400">
             Sign in to continue to your dashboard
           </p>
