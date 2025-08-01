@@ -48,6 +48,12 @@ let ProjectsService = class ProjectsService {
             throw new common_1.NotFoundException(`Project with ID ${id} not found`);
         }
     }
+    async findOne(id) {
+        return this.projectRepository.findOne({
+            where: { id },
+            relations: ['team', 'tasks'],
+        });
+    }
     async update(id, updateProjectDto) {
         const project = await this.projectRepository.findOne({
             where: { id },

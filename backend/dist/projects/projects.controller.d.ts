@@ -8,5 +8,6 @@ export declare class ProjectsController {
     delete(id: number): Promise<{
         message: string;
     }>;
+    findOne(id: number): Promise<import("./project.entity").Project>;
     update(id: number, updateProjectDto: CreateProjectDto): Promise<import("./project.entity").Project>;
 }

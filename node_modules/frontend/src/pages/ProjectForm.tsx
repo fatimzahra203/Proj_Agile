@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 interface FormData {
   name: string;
@@ -106,7 +107,7 @@ const ProjectForm = ({ mode = 'create' }: { mode?: 'create' | 'edit' }) => {
       mode === 'edit'
         ? `http://localhost:3001/api/projects/${projectId}`
         : 'http://localhost:3001/api/projects';
-    const method = mode === 'edit' ? 'PATCH' : 'POST';
+    const method = mode === 'edit' ? 'PUT' : 'POST';
 
     try {
       const response = await fetch(url, {
@@ -118,8 +119,12 @@ const ProjectForm = ({ mode = 'create' }: { mode?: 'create' | 'edit' }) => {
       if (!response.ok) {
         alert(`Error: ${data.message || 'Unknown error'}`);
       } else {
-        alert(mode === 'edit' ? 'Project updated!' : 'Project created!');
-        navigate('/dashboard');
+        if (mode === 'edit') {
+  toast.success('Project updated successfully!');
+} else {
+  toast.success('Project created successfully!');
+}
+        navigate('/home');
       }
     } catch (err) {
       console.error('Error submitting form:', err);

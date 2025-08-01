@@ -8,6 +8,8 @@ import Home from './pages/Home';
 import KanbanBoard from './pages/KanbanBoard';
 import Projectform from './pages/ProjectForm';
 import TeamManagement from './pages/TeamManagement';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   return (
     <BrowserRouter>
@@ -21,8 +23,11 @@ function App() {
           // In your routes (e.g., App.tsx)
       <Route path="/projects/new" element={<Projectform mode="create" />} />
       <Route path="/projects/:id/edit" element={<Projectform mode="edit" />} />
+          <Route path="/team" element={<TeamManagement />} />
+           
 
         </Routes>
+        <ToastContainer position="top-right" autoClose={3000} />
     </BrowserRouter>
   );
 }

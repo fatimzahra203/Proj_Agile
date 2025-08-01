@@ -9,5 +9,6 @@ export declare class ProjectsService {
     create(createProjectDto: CreateProjectDto): Promise<Project>;
     findAll(): Promise<Project[]>;
     delete(id: number): Promise<void>;
+    findOne(id: number): Promise<Project>;
     update(id: number, updateProjectDto: CreateProjectDto): Promise<Project>;
 }
