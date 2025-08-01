@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import Home from './pages/Home';
 import KanbanBoard from './pages/KanbanBoard';
 import Projectform from './pages/ProjectForm';
+import TeamManagement from './pages/TeamManagement';
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/kanban" element={<KanbanBoard />} />
+          <Route path="/team" element={<TeamManagement />} />
           <Route path="/project-form" element={<Projectform />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/" />} />

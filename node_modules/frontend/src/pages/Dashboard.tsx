@@ -327,6 +327,7 @@ const Dashboard = () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <Link 
                   to="/calendar" 
+                  state={{ projectData: project }}
                   className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
                 >
                   <FiCalendar size={24} className="mb-2" />
@@ -341,11 +342,12 @@ const Dashboard = () => {
                   <span className="text-sm font-medium">Kanban Board</span>
                 </Link>
                 <Link 
-                  to="/users" 
+                  to="/team" 
+                  state={{ projectData: project }}
                   className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
                 >
                   <FiUsers size={24} className="mb-2" />
-                  <span className="text-sm font-medium">User Management</span>
+                  <span className="text-sm font-medium">Team Management</span>
                 </Link>
                 <Link 
                   to="/reports" 
