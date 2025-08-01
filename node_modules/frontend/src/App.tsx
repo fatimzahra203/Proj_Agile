@@ -18,7 +18,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/kanban" element={<KanbanBoard />} />
-          // In your routes (e.g., App.tsx)
+          <Route path="/team" element={<TeamManagement />} />
       <Route path="/projects/new" element={<Projectform mode="create" />} />
       <Route path="/projects/:id/edit" element={<Projectform mode="edit" />} />
 
