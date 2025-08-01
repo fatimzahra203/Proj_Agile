@@ -18,11 +18,11 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 let UsersService = class UsersService {
-    constructor(usersRepo) {
-        this.usersRepo = usersRepo;
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
-    findAll() {
-        return this.usersRepo.find();
+    async findByRole(role) {
+        return this.userRepository.find({ where: { role } });
     }
 };
 exports.UsersService = UsersService;

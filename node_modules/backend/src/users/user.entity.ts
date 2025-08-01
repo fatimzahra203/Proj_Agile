@@ -5,6 +5,7 @@ import {
   OneToMany,
   BeforeInsert,
   BeforeUpdate,
+  ManyToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Project } from '../projects/project.entity';
@@ -32,13 +33,12 @@ export class User {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.MEMBER })
   role: UserRole;
 
-  @OneToMany(() => Project, (project) => project.owner)
-  projects: Project[];
-
   @OneToMany(() => Task, (task) => task.assignee)
   tasks: Task[];
 
-  // 👉 Hash password before saving
+  @ManyToMany(() => Project, (project) => project.team)
+  projectsAsTeamMember: Project[]; // Projects where the user is a team member
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {

@@ -1,6 +1,7 @@
 import { UsersService } from './users.service';
+import { UserRole } from './user.entity';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    findAll(): Promise<import("./user.entity").User[]>;
+    findByRole(role: UserRole): Promise<import("./user.entity").User[]>;
 }

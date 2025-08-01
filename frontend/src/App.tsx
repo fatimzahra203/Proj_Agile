@@ -5,6 +5,7 @@ import KanbanBoard from './pages/KanbanBoard';
 import CalendarView from './pages/CalendarView';
 import Login from './pages/Login'; 
 import SignUp from './pages/SignUp';
+import ProjectForm from './pages/ProjectForm';
 
 
 
@@ -13,6 +14,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/project-form" element={<ProjectForm />} />
       <Route path="/kanban" element={<KanbanBoard />} />
       <Route path="/calendar" element={<CalendarView />} />
       <Route path="/signup" element={<SignUp />} />

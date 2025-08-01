@@ -17,28 +17,33 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const project_entity_1 = require("./project.entity");
+const user_entity_1 = require("../users/user.entity");
 let ProjectsService = class ProjectsService {
-    constructor(projectsRepo) {
-        this.projectsRepo = projectsRepo;
+    constructor(projectRepository, userRepository) {
+        this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
-    findAll() {
-        return this.projectsRepo.find({ relations: ['owner', 'tasks'] });
-    }
-    create(dto) {
-        const project = this.projectsRepo.create(dto);
-        return this.projectsRepo.save(project);
-    }
-    update(id, dto) {
-        return this.projectsRepo.update(id, dto);
-    }
-    remove(id) {
-        return this.projectsRepo.delete(id);
+    async create(createProjectDto) {
+        const projectData = {
+            name: createProjectDto.name,
+            description: createProjectDto.description,
+            startDate: createProjectDto.startDate,
+            wipLimit: createProjectDto.wipLimit,
+        };
+        if (createProjectDto.team && createProjectDto.team.length > 0) {
+            const teamUsers = await this.userRepository.findByIds(createProjectDto.team);
+            projectData.team = teamUsers;
+        }
+        const project = this.projectRepository.create(projectData);
+        return this.projectRepository.save(project);
     }
 };
 exports.ProjectsService = ProjectsService;
 exports.ProjectsService = ProjectsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(project_entity_1.Project)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], ProjectsService);
 //# sourceMappingURL=projects.service.js.map
