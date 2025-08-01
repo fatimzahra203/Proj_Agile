@@ -1,10 +1,10 @@
 import { Repository } from 'typeorm';
 import { Project } from './project.entity';
+import { CreateProjectDto } from './dto';
+import { User } from '../users/user.entity';
 export declare class ProjectsService {
-    private projectsRepo;
-    constructor(projectsRepo: Repository<Project>);
-    findAll(): Promise<Project[]>;
-    create(dto: any): Promise<Project[]>;
-    update(id: number, dto: any): Promise<import("typeorm").UpdateResult>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
+    private readonly projectRepository;
+    private readonly userRepository;
+    constructor(projectRepository: Repository<Project>, userRepository: Repository<User>);
+    create(createProjectDto: CreateProjectDto): Promise<Project>;
 }

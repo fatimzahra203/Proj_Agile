@@ -10,7 +10,7 @@ export declare class User {
     email: string;
     password: string;
     role: UserRole;
-    projects: Project[];
     tasks: Task[];
+    projectsAsTeamMember: Project[];
     hashPassword(): Promise<void>;
 }

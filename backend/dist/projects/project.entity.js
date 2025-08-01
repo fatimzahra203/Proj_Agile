@@ -25,9 +25,26 @@ __decorate([
     __metadata("design:type", String)
 ], Project.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.projects),
-    __metadata("design:type", user_entity_1.User)
-], Project.prototype, "owner", void 0);
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Project.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'date' }),
+    __metadata("design:type", String)
+], Project.prototype, "startDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 5 }),
+    __metadata("design:type", Number)
+], Project.prototype, "wipLimit", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => user_entity_1.User, (user) => user.projectsAsTeamMember),
+    (0, typeorm_1.JoinTable)({
+        name: 'project_users',
+        joinColumn: { name: 'projectId', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'userId', referencedColumnName: 'id' },
+    }),
+    __metadata("design:type", Array)
+], Project.prototype, "team", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => task_entity_1.Task, (task) => task.project),
     __metadata("design:type", Array)

@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User, UserRole } from './user.entity';
 export declare class UsersService {
-    private usersRepo;
-    constructor(usersRepo: Repository<User>);
-    findAll(): Promise<User[]>;
+    private readonly userRepository;
+    constructor(userRepository: Repository<User>);
+    findByRole(role: UserRole): Promise<User[]>;
 }
