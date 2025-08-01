@@ -138,7 +138,7 @@ const Dashboard = () => {
           </div>
           <div className="flex gap-3">
             <Link to="/kanban" state={{ projectData: project }} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-sm rounded-lg shadow-sm">View Kanban</Link>
-            <Link to="/" className="bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 px-3 py-1.5 text-sm rounded-lg shadow-sm">Back to Projects</Link>
+            <Link to="/home" className="bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 px-3 py-1.5 text-sm rounded-lg shadow-sm">Back to Projects</Link>
           </div>
         </div>
       </header>

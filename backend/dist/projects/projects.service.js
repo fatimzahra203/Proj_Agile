@@ -37,6 +37,17 @@ let ProjectsService = class ProjectsService {
         const project = this.projectRepository.create(projectData);
         return this.projectRepository.save(project);
     }
+    async findAll() {
+        return this.projectRepository.find({
+            relations: ['team', 'tasks'],
+        });
+    }
+    async delete(id) {
+        const result = await this.projectRepository.delete(id);
+        if (result.affected === 0) {
+            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
+        }
+    }
 };
 exports.ProjectsService = ProjectsService;
 exports.ProjectsService = ProjectsService = __decorate([

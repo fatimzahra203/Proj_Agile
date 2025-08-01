@@ -158,12 +158,19 @@ const ProjectForm = () => {
             </select>
           </div>
 
-          <div className="col-span-1 md:col-span-2">
+          <div className="col-span-1 md:col-span-2 flex gap-4">
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-300"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-300"
             >
-            Create Project
+              Create Project
+            </button>
+            <button
+              type="button"
+              className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 rounded-lg transition-all duration-300"
+              onClick={() => navigate('/home')}
+            >
+              Cancel
             </button>
           </div>
         </form>

@@ -7,4 +7,6 @@ export declare class ProjectsService {
     private readonly userRepository;
     constructor(projectRepository: Repository<Project>, userRepository: Repository<User>);
     create(createProjectDto: CreateProjectDto): Promise<Project>;
+    findAll(): Promise<Project[]>;
+    delete(id: number): Promise<void>;
 }

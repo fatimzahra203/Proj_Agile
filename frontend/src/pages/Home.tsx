@@ -3,53 +3,54 @@ import { useNavigate } from 'react-router-dom';
 import { FiMoreVertical, FiEdit2, FiTrash2, FiPlus, FiX, FiUser } from 'react-icons/fi';
 
 interface TeamMember {
-  id: string;
-  name: string;
+  id: number;
+  username: string | null; // Allow name to be null
 }
 
 interface Project {
-  id: string;
+  id: number;
   name: string;
-  sector: string;
-  date: string;
+  description: string | null;
+  startDate: string;
+  wipLimit: number;
   team: TeamMember[];
 }
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: '1',
-      name: 'Website Redesign',
-      sector: 'Web Development',
-      date: '2025-08-15',
-      team: [{ id: '1', name: 'John Doe' }, { id: '2', name: 'Jane Smith' }]
-    },
-    {
-      id: '2',
-      name: 'Mobile App Launch',
-      sector: 'Mobile Development',
-      date: '2025-09-01',
-      team: [{ id: '3', name: 'Alex Johnson' }, { id: '4', name: 'Sam Wilson' }]
-    },
-    {
-      id: '3',
-      name: 'Marketing Campaign',
-      sector: 'Marketing',
-      date: '2025-08-20',
-      team: [{ id: '5', name: 'Emma Brown' }]
-    }
-  ]);
-  
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
-  // This would be replaced with actual API calls
   useEffect(() => {
-    // fetch projects from API
-    // setProjects(data)
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/projects', {
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          throw new Error(`Expected JSON, got ${contentType}: ${text.slice(0, 100)}`);
+        }
+
+        const data = await response.json();
+        setProjects(data);
+        console.log('Fetched projects:', data)
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+    fetchProjects();
   }, []);
 
-  const handleMenuToggle = (projectId: string) => {
+  const handleMenuToggle = (projectId: number) => {
     if (activeMenu === projectId) {
       setActiveMenu(null);
     } else {
@@ -57,33 +58,37 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleDeleteProject = (projectId: string) => {
-    // API call would go here
-    setProjects(projects.filter(project => project.id !== projectId));
-    setActiveMenu(null);
+  const handleDeleteProject = async (projectId: number) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/projects/${projectId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      setProjects(projects.filter(project => project.id !== projectId));
+      setActiveMenu(null);
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
   };
 
   const handleEditProject = (project: Project) => {
-    // Navigate to edit page or open edit modal
-    console.log("Edit project", project);
+    navigate(`/project-form/${project.id}`, { state: { project } });
     setActiveMenu(null);
   };
 
-  const handleViewDashboard = (projectId: string) => {
-    // Find the selected project by ID
+  const handleViewDashboard = (projectId: number) => {
     const selectedProject = projects.find(project => project.id === projectId);
-    // Navigate to dashboard with project data as state
     navigate(`/dashboard`, { state: { selectedProject } });
   };
 
   const handleAddProject = () => {
-    // Navigate to the project form page
     navigate('/project-form');
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-blue-600 text-white shadow-md">
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
@@ -98,7 +103,6 @@ const Home: React.FC = () => {
         </div>
       </header>
 
-      {/* Main content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-800 text-center">Welcome to AgileFlow</h2>
@@ -107,7 +111,6 @@ const Home: React.FC = () => {
           </p>
         </div>
 
-        {/* Projects list */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold text-gray-700">Your Projects</h3>
@@ -127,10 +130,13 @@ const Home: React.FC = () => {
                     Project Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Sector
+                    Description
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
+                    Start Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    WIP Limit
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Team
@@ -149,24 +155,28 @@ const Home: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                      {project.sector}
+                      {project.description || 'No description'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                      {new Date(project.date).toLocaleDateString()}
+                      {new Date(project.startDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      {project.wipLimit}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex -space-x-2">
                         {project.team.slice(0, 3).map((member, index) => (
-                          <div 
-                            key={member.id}
-                            className="h-8 w-8 rounded-full bg-blue-400 border-2 border-white flex items-center justify-center"
-                            title={member.name}
-                          >
-                            <span className="text-xs text-white font-medium">
-                              {member.name.split(' ').map(n => n[0]).join('')}
-                            </span>
-                          </div>
-                        ))}
+  <div 
+    key={member.id}
+    className="h-8 rounded-full bg-blue-400 border-2 border-white inline-flex items-center justify-center px-2"
+    title={member.username || 'Unknown'}
+  >
+    <span className="text-xs text-white font-medium truncate max-w-[100px]">
+      {member.username || 'N/A'}
+    </span>
+  </div>
+))}
+                
                         {project.team.length > 3 && (
                           <div className="h-8 w-8 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center">
                             <span className="text-xs text-gray-600 font-medium">
@@ -183,7 +193,6 @@ const Home: React.FC = () => {
                       >
                         <FiMoreVertical size={20} />
                       </button>
-                      
                       {activeMenu === project.id && (
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
                           <div className="py-1">

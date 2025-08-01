@@ -23,6 +23,13 @@ let ProjectsController = class ProjectsController {
     async create(createProjectDto) {
         return this.projectsService.create(createProjectDto);
     }
+    async findAll() {
+        return this.projectsService.findAll();
+    }
+    async delete(id) {
+        await this.projectsService.delete(id);
+        return { message: `Project with ID ${id} deleted successfully` };
+    }
 };
 exports.ProjectsController = ProjectsController;
 __decorate([
@@ -32,6 +39,19 @@ __decorate([
     __metadata("design:paramtypes", [dto_1.CreateProjectDto]),
     __metadata("design:returntype", Promise)
 ], ProjectsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "delete", null);
 exports.ProjectsController = ProjectsController = __decorate([
     (0, common_1.Controller)('projects'),
     __metadata("design:paramtypes", [projects_service_1.ProjectsService])

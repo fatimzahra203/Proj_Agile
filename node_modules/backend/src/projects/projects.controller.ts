@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto';
 
@@ -9,5 +9,16 @@ export class ProjectsController {
   @Post()
   async create(@Body() createProjectDto: CreateProjectDto) {
     return this.projectsService.create(createProjectDto);
+  }
+
+  @Get()
+  async findAll() {
+    return this.projectsService.findAll(); 
+  }
+
+  @Delete(':id')
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    await this.projectsService.delete(id);
+    return { message: `Project with ID ${id} deleted successfully` };
   }
 }
