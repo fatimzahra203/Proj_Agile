@@ -59,6 +59,9 @@ const Home: React.FC = () => {
   };
 
   const handleDeleteProject = async (projectId: number) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete project with ID ${projectId}?`);
+    if (!confirmDelete) return;
+
     try {
       const response = await fetch(`http://localhost:3001/api/projects/${projectId}`, {
         method: 'DELETE',
@@ -74,10 +77,9 @@ const Home: React.FC = () => {
   };
 
   const handleEditProject = (project: Project) => {
-    navigate(`/project-form/${project.id}`, { state: { project } });
+    navigate(`/projects/${project.id}/edit`, { state: { project } });
     setActiveMenu(null);
   };
-
   const handleViewDashboard = (projectId: number) => {
     const selectedProject = projects.find(project => project.id === projectId);
     navigate(`/dashboard`, { state: { selectedProject } });

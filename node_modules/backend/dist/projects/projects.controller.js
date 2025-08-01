@@ -30,6 +30,9 @@ let ProjectsController = class ProjectsController {
         await this.projectsService.delete(id);
         return { message: `Project with ID ${id} deleted successfully` };
     }
+    async update(id, updateProjectDto) {
+        return this.projectsService.update(id, updateProjectDto);
+    }
 };
 exports.ProjectsController = ProjectsController;
 __decorate([
@@ -52,6 +55,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], ProjectsController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, dto_1.CreateProjectDto]),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "update", null);
 exports.ProjectsController = ProjectsController = __decorate([
     (0, common_1.Controller)('projects'),
     __metadata("design:paramtypes", [projects_service_1.ProjectsService])

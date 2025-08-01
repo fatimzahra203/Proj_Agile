@@ -48,6 +48,30 @@ let ProjectsService = class ProjectsService {
             throw new common_1.NotFoundException(`Project with ID ${id} not found`);
         }
     }
+    async update(id, updateProjectDto) {
+        const project = await this.projectRepository.findOne({
+            where: { id },
+            relations: ['team'],
+        });
+        if (!project) {
+            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
+        }
+        const projectData = {
+            name: updateProjectDto.name,
+            description: updateProjectDto.description,
+            startDate: updateProjectDto.startDate,
+            wipLimit: updateProjectDto.wipLimit,
+        };
+        if (updateProjectDto.team && updateProjectDto.team.length > 0) {
+            const teamUsers = await this.userRepository.findByIds(updateProjectDto.team);
+            projectData.team = teamUsers;
+        }
+        else {
+            projectData.team = [];
+        }
+        Object.assign(project, projectData);
+        return this.projectRepository.save(project);
+    }
 };
 exports.ProjectsService = ProjectsService;
 exports.ProjectsService = ProjectsService = __decorate([
