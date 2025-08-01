@@ -21,7 +21,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f5f7fa] px-4">
+     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-purple-100 px-4">
       <div className="bg-white rounded-xl shadow-md w-full max-w-md p-8">
         {/* Logo + Heading */}
         <div className="mb-6 text-center">
@@ -81,7 +81,7 @@ const Login: React.FC = () => {
             Login
           </button>
 
-          {message && <p className="text-center text-red-500">{message}</p>}
+          {message && <p className="text-center text-green-500">{message}</p>}
         </form>
 
         {/* Footer */}
