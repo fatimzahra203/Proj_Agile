@@ -31,9 +31,6 @@ const ProjectForm = ({ mode = 'create' }: { mode?: 'create' | 'edit' }) => {
   const navigate = useNavigate();
   const params = useParams();
 
-  // If in edit mode, get project ID from URL
-  // Wait for members to load before setting formData for edit mode
-  // Fetch project data for edit mode, but don't set formData until members are loaded
   useEffect(() => {
     const fetchProject = async (id: string) => {
       try {
