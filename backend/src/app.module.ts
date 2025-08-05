@@ -18,6 +18,7 @@ import { TasksModule } from './tasks/tasks.module';
   synchronize: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
 }),
+
     AuthModule,
     UsersModule,
     ProjectsModule,

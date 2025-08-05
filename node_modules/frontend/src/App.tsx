@@ -9,7 +9,8 @@ import KanbanBoard from './pages/KanbanBoard';
 import Projectform from './pages/ProjectForm';
 import TeamManagement from './pages/TeamManagement';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';           
+import 'react-toastify/dist/ReactToastify.css';    
+import ForgetPassword from './pages/ForgotPassword';       
 function App() {
   return (
     <BrowserRouter>
@@ -21,9 +22,10 @@ function App() {
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/kanban" element={<KanbanBoard />} />
           <Route path="/team" element={<TeamManagement />} />
-      <Route path="/projects/new" element={<Projectform mode="create" />} />
-      <Route path="/projects/:id/edit" element={<Projectform mode="edit" />} />
-          <Route path="/team" element={<TeamManagement />} />
+          <Route path="/projects/new" element={<Projectform mode="create" />} />
+          <Route path="/projects/:id/edit" element={<Projectform mode="edit" />} />
+          <Route path="/forget" element={<ForgetPassword />} />
+
            
 
         </Routes>

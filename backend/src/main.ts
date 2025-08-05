@@ -5,8 +5,10 @@ import { ValidationPipe, BadRequestException } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: 'http://localhost:5173', // frontend Vite
-      credentials: true, // si tu utilises cookies, sessions, ou headers sécurisés
+      origin: 'http://localhost:3000', // Update to match your frontend
+      credentials: true, // Keep this for cookies or auth headers
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Explicitly allow methods
+      allowedHeaders: ['Content-Type', 'Authorization'], // Allow common headers
     },
   });
 

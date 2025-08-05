@@ -1,5 +1,6 @@
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto } from './dto';
+import { ForgotPasswordDto } from './dto';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
@@ -22,5 +23,9 @@ export declare class AuthController {
             username: string;
             role: import("../users/user.entity").UserRole;
         };
+    }>;
+    forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{
+        message: string;
+        newPassword: string;
     }>;
 }

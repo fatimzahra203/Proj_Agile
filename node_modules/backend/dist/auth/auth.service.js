@@ -53,6 +53,32 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException(error.message || 'Login failed');
         }
     }
+    async forgotPassword(email) {
+        try {
+            const user = await this.userRepository.findOne({ where: { email } });
+            if (!user) {
+                throw new common_1.BadRequestException('No user found with this email');
+            }
+            const newPassword = this.generateRandomPassword();
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            await this.userRepository.update({ email }, { password: hashedPassword });
+            console.log(`New password for ${email}: ${newPassword}`);
+            return newPassword;
+        }
+        catch (error) {
+            console.error('Forgot password error:', error);
+            throw new common_1.BadRequestException(error.message || 'Failed to reset password');
+        }
+    }
+    generateRandomPassword(length = 12) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            password += chars[randomIndex];
+        }
+        return password;
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

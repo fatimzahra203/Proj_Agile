@@ -1,4 +1,3 @@
-// auth.service.ts
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,7 +14,7 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     try {
-      console.log('Register DTO:', registerDto); // Debug log
+      console.log('Register DTO:', registerDto);
       const { username, email, password, role } = registerDto;
       const existingUser = await this.userRepository.findOne({ where: { email } });
       if (existingUser) {
@@ -42,5 +41,34 @@ export class AuthService {
       console.error('Login error:', error);
       throw new BadRequestException(error.message || 'Login failed');
     }
+  }
+
+  async forgotPassword(email: string): Promise<string> {
+    try {
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (!user) {
+        throw new BadRequestException('No user found with this email');
+      }
+
+      const newPassword = this.generateRandomPassword();
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await this.userRepository.update({ email }, { password: hashedPassword }); // Bypass @BeforeInsert
+
+      console.log(`New password for ${email}: ${newPassword}`);
+      return newPassword;
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      throw new BadRequestException(error.message || 'Failed to reset password');
+    }
+  }
+
+  private generateRandomPassword(length: number = 12): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      password += chars[randomIndex];
+    }
+    return password;
   }
 }

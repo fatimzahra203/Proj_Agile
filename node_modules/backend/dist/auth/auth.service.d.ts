@@ -24,4 +24,6 @@ export declare class AuthService {
             role: import("../users/user.entity").UserRole;
         };
     }>;
+    forgotPassword(email: string): Promise<string>;
+    private generateRandomPassword;
 }
