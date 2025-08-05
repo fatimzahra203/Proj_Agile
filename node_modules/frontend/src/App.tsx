@@ -9,7 +9,7 @@ import KanbanBoard from './pages/KanbanBoard';
 import Projectform from './pages/ProjectForm';
 import TeamManagement from './pages/TeamManagement';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';           
 function App() {
   return (
     <BrowserRouter>
