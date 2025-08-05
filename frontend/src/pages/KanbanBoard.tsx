@@ -289,7 +289,17 @@ const KanbanBoard: React.FC = () => {
       // If we still don't have a target column, try to get it from DOM
       if (!targetColumnId) {
         // Check if dropped on a column element directly
-        const overElement = document.elementFromPoint(event.activatorEvent.clientX, event.activatorEvent.clientY);
+        let clientX = 0;
+        let clientY = 0;
+        const activatorEvent = event.activatorEvent as MouseEvent | TouchEvent;
+        if ('clientX' in activatorEvent && 'clientY' in activatorEvent) {
+          clientX = activatorEvent.clientX;
+          clientY = activatorEvent.clientY;
+        } else if ('touches' in activatorEvent && activatorEvent.touches.length > 0) {
+          clientX = activatorEvent.touches[0].clientX;
+          clientY = activatorEvent.touches[0].clientY;
+        }
+        const overElement = document.elementFromPoint(clientX, clientY);
         if (overElement) {
           // Find the nearest column
           const column = overElement.closest('[data-column-id]');
