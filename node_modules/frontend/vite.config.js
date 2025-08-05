@@ -9,4 +9,8 @@ export default defineConfig({
       plugins: [tailwindcss(), require('autoprefixer')],
     },
   },
+   server: {
+    host: true,
+    port: 3000
+  },
 });
