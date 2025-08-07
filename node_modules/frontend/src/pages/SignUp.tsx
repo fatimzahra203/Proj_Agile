@@ -27,7 +27,7 @@ const SignUp: React.FC = () => {
       setMessage(data.message || (data.statusCode ? data.message[0] : ''));
       if (data.success) {
         // Optionally redirect to login after successful signup
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     } catch (error) {
       setMessage('Something went wrong. Please try again.');

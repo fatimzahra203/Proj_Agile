@@ -3,9 +3,11 @@ import { Project } from '../projects/project.entity';
 import { User } from '../users/user.entity';
 
 export enum TaskStatus {
-  TODO = 'todo',
-  IN_PROGRESS = 'in_progress',
-  DONE = 'done',
+TODO = 'todo',
+READY = 'ready',
+ONGOING = 'ongoing',
+ONHOLD = 'onhold',
+DONE = 'done',
 }
 
 @Entity()
@@ -19,7 +21,7 @@ export class Task {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.TODO })
+  @Column({ type: 'enum', enum: TaskStatus })
   status: TaskStatus;
 
   @Column({ type: 'timestamp', nullable: true })

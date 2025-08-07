@@ -62,20 +62,27 @@ let ProjectsService = class ProjectsService {
         if (!project) {
             throw new common_1.NotFoundException(`Project with ID ${id} not found`);
         }
-        const projectData = {
-            name: updateProjectDto.name,
-            description: updateProjectDto.description,
-            startDate: updateProjectDto.startDate,
-            wipLimit: updateProjectDto.wipLimit,
-        };
-        if (updateProjectDto.team && updateProjectDto.team.length > 0) {
-            const teamUsers = await this.userRepository.findByIds(updateProjectDto.team);
-            projectData.team = teamUsers;
+        if (typeof updateProjectDto.name !== 'undefined') {
+            project.name = updateProjectDto.name;
         }
-        else {
-            projectData.team = [];
+        if (typeof updateProjectDto.description !== 'undefined') {
+            project.description = updateProjectDto.description;
         }
-        Object.assign(project, projectData);
+        if (typeof updateProjectDto.startDate !== 'undefined') {
+            project.startDate = updateProjectDto.startDate;
+        }
+        if (typeof updateProjectDto.wipLimit !== 'undefined') {
+            project.wipLimit = updateProjectDto.wipLimit;
+        }
+        if (Array.isArray(updateProjectDto.team)) {
+            if (updateProjectDto.team.length > 0) {
+                const teamUsers = await this.userRepository.findByIds(updateProjectDto.team);
+                project.team = teamUsers;
+            }
+            else {
+                project.team = [];
+            }
+        }
         return this.projectRepository.save(project);
     }
 };

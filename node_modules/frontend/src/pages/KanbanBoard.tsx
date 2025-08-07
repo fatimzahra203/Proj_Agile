@@ -192,18 +192,42 @@ const KanbanBoard: React.FC = () => {
     { id: 'done', title: 'Done', color: 'green' }
   ];
   
-  // Mock tasks data - this would typically come from an API
-  const [tasks, setTasks] = useState<TaskItem[]>([
-    { id: 'task-1', content: 'Design login page', column: 'tasks', assignee: 'John Doe' },
-    { id: 'task-2', content: 'Implement authentication', column: 'ready', assignee: 'Jane Smith' },
-    { id: 'task-3', content: 'Create dashboard layout', column: 'ongoing', assignee: 'Mike Johnson' },
-    { id: 'task-4', content: 'Fix responsive issues', column: 'onhold', assignee: 'Sarah Williams' },
-    { id: 'task-5', content: 'Unit testing', column: 'done', assignee: 'Chris Martin' },
-    { id: 'task-6', content: 'API integration', column: 'tasks', assignee: 'Emily Brown' },
-    { id: 'task-7', content: 'Documentation', column: 'ready', assignee: 'Alex Wilson' },
-    { id: 'task-8', content: 'Deployment setup', column: 'ongoing', assignee: 'David Miller' },
-    { id: 'task-9', content: 'Performance optimization', column: 'tasks', assignee: 'Linda Garcia' },
-  ]);
+  // Fetch tasks and team members from backend
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+
+  useEffect(() => {
+    // Fetch tasks
+    fetch('http://localhost:3001/api/tasks')
+      .then(res => res.json())
+      .then(data => {
+        // Map backend tasks to Kanban columns
+        const mappedTasks = data.map((task: any) => {
+          let column = 'tasks';
+          switch (task.status) {
+            case 'todo': column = 'tasks'; break;
+            case 'ready': column = 'ready'; break;
+            case 'ongoing': column = 'ongoing'; break;
+            case 'onhold': column = 'onhold'; break;
+            case 'done': column = 'done'; break;
+            default: column = 'tasks';
+          }
+          return {
+            id: String(task.id),
+            content: task.title,
+            column,
+            assignee: task.assignee ? (task.assignee.username || task.assignee.email || String(task.assignee.id)) : undefined
+          };
+        });
+        setTasks(mappedTasks);
+      });
+    // Fetch team members
+    fetch('http://localhost:3001/api/users')
+      .then(res => res.json())
+      .then(data => {
+        setTeamMembers(data);
+      });
+  }, []);
 
   // Find active task when dragging
   const activeTask = activeId ? tasks.find(task => task.id === activeId) : null;
@@ -251,11 +275,9 @@ const KanbanBoard: React.FC = () => {
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const activeId = String(active.id);
+    // Optionally, set activeId for drag overlay
     setActiveId(activeId);
-    
-    // Find the task that's being dragged
-    const activeTask = tasks.find(task => task.id === activeId);
-    // We don't need to set activeTask as a state since we find it directly from the tasks array
+    // No backend update on drag start
   };
 
   // Handle drag end event
@@ -320,19 +342,54 @@ const KanbanBoard: React.FC = () => {
     
     console.log(`Moving task ${activeId} from ${activeTask.column} to ${targetColumnId}`);
     
-    // If we have a valid target column, update the task
+    // If we have a valid target column, update the task and backend
     if (targetColumnId && targetColumnId !== activeTask.column) {
-      setTasks(tasks.map(task => 
-        task.id === activeId ? { ...task, column: targetColumnId } : task
-      ));
+      moveTask(activeId, targetColumnId);
     }
   };
 
   // Function to handle moving a task between columns
   const moveTask = (taskId: string, newColumn: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, column: newColumn } : task
+    // Map column to backend status value
+    let newStatus: 'todo' | 'ready' | 'ongoing' | 'onhold' | 'done';
+    switch (newColumn) {
+      case 'tasks':
+        newStatus = 'todo';
+        break;
+      case 'ready':
+        newStatus = 'ready';
+        break;
+      case 'ongoing':
+        newStatus = 'ongoing';
+        break;
+      case 'onhold':
+        newStatus = 'onhold';
+        break;
+      case 'done':
+        newStatus = 'done';
+        break;
+      default:
+        newStatus = 'todo'; // fallback
+    }
+
+    // Update frontend state immediately (also update status field)
+    setTasks(tasks.map(task =>
+      task.id === taskId ? { ...task, column: newColumn, status: newStatus } : task
     ));
+
+    // Send update to backend
+    fetch(`http://localhost:3001/api/tasks/${taskId}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    })
+      .then(res => res.json())
+      .then(data => {
+        // Optionally update local state with backend response
+        setTasks(prev => prev.map(task =>
+          task.id === taskId ? { ...task, column: newColumn, status: data.status } : task
+        ));
+      });
   };
 
   return (

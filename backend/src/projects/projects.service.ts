@@ -73,21 +73,30 @@ export class ProjectsService {
     throw new NotFoundException(`Project with ID ${id} not found`);
   }
 
-  const projectData: DeepPartial<Project> = {
-    name: updateProjectDto.name,
-    description: updateProjectDto.description,
-    startDate: updateProjectDto.startDate,
-    wipLimit: updateProjectDto.wipLimit,
-  };
-
-  if (updateProjectDto.team && updateProjectDto.team.length > 0) {
-    const teamUsers = await this.userRepository.findByIds(updateProjectDto.team);
-    projectData.team = teamUsers;
-  } else {
-    projectData.team = [];
+  // Only update fields that are present in the payload
+  if (typeof updateProjectDto.name !== 'undefined') {
+    project.name = updateProjectDto.name;
+  }
+  if (typeof updateProjectDto.description !== 'undefined') {
+    project.description = updateProjectDto.description;
+  }
+  if (typeof updateProjectDto.startDate !== 'undefined') {
+    project.startDate = updateProjectDto.startDate;
+  }
+  if (typeof updateProjectDto.wipLimit !== 'undefined') {
+    project.wipLimit = updateProjectDto.wipLimit;
   }
 
-  Object.assign(project, projectData);
+  // Always update team, even if empty or missing
+  if (Array.isArray(updateProjectDto.team)) {
+    if (updateProjectDto.team.length > 0) {
+      const teamUsers = await this.userRepository.findByIds(updateProjectDto.team);
+      project.team = teamUsers;
+    } else {
+      project.team = [];
+    }
+  }
+
   return this.projectRepository.save(project);
 }
 }

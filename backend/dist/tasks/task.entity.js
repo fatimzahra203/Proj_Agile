@@ -16,7 +16,9 @@ const user_entity_1 = require("../users/user.entity");
 var TaskStatus;
 (function (TaskStatus) {
     TaskStatus["TODO"] = "todo";
-    TaskStatus["IN_PROGRESS"] = "in_progress";
+    TaskStatus["READY"] = "ready";
+    TaskStatus["ONGOING"] = "ongoing";
+    TaskStatus["ONHOLD"] = "onhold";
     TaskStatus["DONE"] = "done";
 })(TaskStatus || (exports.TaskStatus = TaskStatus = {}));
 let Task = class Task {

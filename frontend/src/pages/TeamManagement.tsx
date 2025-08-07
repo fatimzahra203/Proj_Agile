@@ -54,171 +54,31 @@ const TeamManagement: React.FC = () => {
 
   useEffect(() => {
     // Check if we have project data in the location state
-    if (location.state?.projectData) {
-      setProject(location.state.projectData);
+    // Only set project if available
+    if ((location as any).state?.projectData) {
+      setProject((location as any).state.projectData);
     }
 
-    // Mock data for team members
-    const mockTeamMembers: TeamMember[] = [
-      {
-        id: '1',
-        name: 'John Doe',
-        role: 'Project Manager',
-        email: 'john.doe@example.com',
-        assignedTasks: [
-          { id: '101', title: 'Create project timeline', status: 'ongoing', dueDate: '2025-08-10' },
-          { id: '102', title: 'Review specifications', status: 'done', dueDate: '2025-07-28' }
-        ]
-      },
-      {
-        id: '2',
-        name: 'Jane Smith',
-        role: 'UX Designer',
-        email: 'jane.smith@example.com',
-        assignedTasks: [
-          { id: '103', title: 'Design login page', status: 'ongoing', dueDate: '2025-08-05' },
-          { id: '104', title: 'Create wireframes', status: 'todo', dueDate: '2025-08-15' }
-        ]
-      },
-      {
-        id: '3',
-        name: 'Mike Johnson',
-        role: 'Frontend Developer',
-        email: 'mike.johnson@example.com',
-        assignedTasks: [
-          { id: '105', title: 'Implement UI components', status: 'todo', dueDate: '2025-08-20' }
-        ]
-      },
-      {
-        id: '4',
-        name: 'Sarah Williams',
-        role: 'Backend Developer',
-        email: 'sarah.williams@example.com',
-        assignedTasks: [
-          { id: '106', title: 'Setup database schema', status: 'done', dueDate: '2025-07-25' },
-          { id: '107', title: 'Create API endpoints', status: 'ongoing', dueDate: '2025-08-08' }
-        ]
-      }
-    ];
-
-    setTeamMembers(mockTeamMembers);
-    
-    // Mock data for available tasks
-    const mockAvailableTasks: Task[] = [
-      { id: '201', title: 'Documentation update', status: 'todo', dueDate: '2025-08-25' },
-      { id: '202', title: 'Performance testing', status: 'todo', dueDate: '2025-08-30' },
-      { id: '203', title: 'Code review', status: 'todo', dueDate: '2025-08-15' },
-      { id: '204', title: 'Bug fixing', status: 'todo', dueDate: '2025-08-12' }
-    ];
-
-    setAvailableTasks(mockAvailableTasks);
+    // Fetch team members from backend
+    fetch('http://localhost:3001/api/users')
+      .then(res => res.json())
+      .then(data => {
+        // Ensure each member has assignedTasks array
+        const membersWithTasks = data.map((member: any) => ({
+          ...member,
+          assignedTasks: Array.isArray(member.assignedTasks) ? member.assignedTasks : []
+        }));
+        setTeamMembers(membersWithTasks);
+      });
+    // Fetch available tasks from backend
+    fetch('http://localhost:3001/api/tasks')
+      .then(res => res.json())
+      .then(data => {
+        setAvailableTasks(data);
+      });
   }, [location]);
-
-  const handleAddMember = () => {
-    if (newMember.name && newMember.role && newMember.email) {
-      const newTeamMember: TeamMember = {
-        id: `member-${Date.now()}`,
-        name: newMember.name,
-        role: newMember.role,
-        email: newMember.email,
-        assignedTasks: []
-      };
-
-      setTeamMembers([...teamMembers, newTeamMember]);
-      setNewMember({ name: '', role: '', email: '' });
-      setIsAddingMember(false);
-    }
-  };
-
-  const handleEditMember = () => {
-    if (selectedMember && newMember.name && newMember.role && newMember.email) {
-      const updatedMembers = teamMembers.map(member => 
-        member.id === selectedMember.id ? 
-        { 
-          ...member, 
-          name: newMember.name, 
-          role: newMember.role, 
-          email: newMember.email 
-        } : member
-      );
-
-      setTeamMembers(updatedMembers);
-      setNewMember({ name: '', role: '', email: '' });
-      setIsEditingMember(false);
-    }
-  };
-
-  const handleRemoveMember = (memberId: string) => {
-    setTeamMembers(teamMembers.filter(member => member.id !== memberId));
-    if (selectedMember?.id === memberId) {
-      setSelectedMember(null);
-    }
-  };
-
-  const handleAssignTask = () => {
-    if (selectedMember && selectedTaskId) {
-      const taskToAssign = availableTasks.find(task => task.id === selectedTaskId);
-      
-      if (taskToAssign) {
-        // Add task to selected member
-        const updatedMembers = teamMembers.map(member => 
-          member.id === selectedMember.id ? 
-          { 
-            ...member, 
-            assignedTasks: [...member.assignedTasks, taskToAssign] 
-          } : member
-        );
-
-        setTeamMembers(updatedMembers);
-        
-        // Update selected member if they are currently selected
-        if (selectedMember) {
-          const updatedSelectedMember = updatedMembers.find(member => member.id === selectedMember.id);
-          if (updatedSelectedMember) {
-            setSelectedMember(updatedSelectedMember);
-          }
-        }
-        
-        // Remove task from available tasks
-        setAvailableTasks(availableTasks.filter(task => task.id !== selectedTaskId));
-        setSelectedTaskId('');
-        setIsAssigningTask(false);
-      }
-    }
-  };
-
-  const handleUnassignTask = (memberId: string, taskId: string) => {
-    // Remove task from member
-    const memberToUpdate = teamMembers.find(member => member.id === memberId);
-    
-    if (memberToUpdate) {
-      const taskToUnassign = memberToUpdate.assignedTasks.find(task => task.id === taskId);
-      
-      if (taskToUnassign) {
-        // Update team members
-        const updatedMembers = teamMembers.map(member => 
-          member.id === memberId ? 
-          { 
-            ...member, 
-            assignedTasks: member.assignedTasks.filter(task => task.id !== taskId) 
-          } : member
-        );
-
-        setTeamMembers(updatedMembers);
-        
-        // Update selected member if they are currently selected
-        if (selectedMember && selectedMember.id === memberId) {
-          const updatedSelectedMember = updatedMembers.find(member => member.id === memberId);
-          if (updatedSelectedMember) {
-            setSelectedMember(updatedSelectedMember);
-          }
-        }
-        
-        // Add task back to available tasks
-        setAvailableTasks([...availableTasks, taskToUnassign]);
-      }
-    }
-  };
+    // ...existing code...
+    // (This block is now replaced by the correct handler above)
 
   const startEditMember = (member: TeamMember) => {
     setSelectedMember(member);
@@ -231,7 +91,8 @@ const TeamManagement: React.FC = () => {
   };
 
   // Generate initials from name
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string) => {
+    if (!name || typeof name !== 'string') return '';
     return name
       .split(' ')
       .map(n => n[0])
@@ -252,6 +113,113 @@ const TeamManagement: React.FC = () => {
         return 'bg-green-200 text-green-800';
       default:
         return 'bg-gray-200 text-gray-800';
+    }
+  };
+
+  const handleAddMember = () => {
+    // Add new member to the backend
+    fetch('http://localhost:3001/api/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newMember)
+    })
+    .then(res => res.json())
+    .then(data => {
+      // Update team members state
+      setTeamMembers([...teamMembers, { ...data, assignedTasks: [] }]);
+      setIsAddingMember(false);
+    });
+  };
+
+  const handleEditMember = () => {
+    if (!selectedMember) return;
+
+    // Update member details in the backend
+    fetch(`http://localhost:3001/api/users/${selectedMember.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ...selectedMember, ...newMember })
+    })
+    .then(res => res.json())
+    .then(data => {
+      // Update team members state
+      const updatedMembers = teamMembers.map(member => 
+        member.id === data.id ? { ...member, ...data } : member
+      );
+      setTeamMembers(updatedMembers);
+      setSelectedMember({ ...selectedMember, ...newMember });
+      setIsEditingMember(false);
+    });
+  };
+
+  const handleAssignTask = () => {
+    if (!selectedMember || !selectedTaskId) return;
+
+    // Find the task to assign
+    const taskToAssign = availableTasks.find(task => task.id === selectedTaskId);
+    if (!taskToAssign) return;
+
+    // Update the selected member's assignedTasks
+    const updatedMember = {
+      ...selectedMember,
+      assignedTasks: [...selectedMember.assignedTasks, taskToAssign]
+    };
+
+    // Update team members state
+    const updatedMembers = teamMembers.map(member => 
+      member.id === updatedMember.id ? updatedMember : member
+    );
+    setTeamMembers(updatedMembers);
+    setSelectedMember(updatedMember);
+
+    // Remove the assigned task from available tasks
+    setAvailableTasks(availableTasks.filter(task => task.id !== selectedTaskId));
+
+    setIsAssigningTask(false);
+    setSelectedTaskId('');
+  };
+
+  const handleRemoveMember = (memberId: string) => {
+    // Remove member from backend
+    fetch(`http://localhost:3001/api/users/${memberId}`, {
+      method: 'DELETE'
+    })
+    .then(() => {
+      // Update team members state
+      setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+      if (selectedMember?.id === memberId) {
+        setSelectedMember(null);
+      }
+    });
+  };
+
+  const handleUnassignTask = (memberId: string, taskId: string) => {
+    // Remove task from member
+    const memberToUpdate = teamMembers.find((m) => m.id === memberId);
+    if (memberToUpdate) {
+      const taskToUnassign = memberToUpdate.assignedTasks.find((t) => t.id === taskId);
+      if (taskToUnassign) {
+        // Update team members
+        const updatedMembers = teamMembers.map((m) =>
+          m.id === memberId
+            ? { ...m, assignedTasks: m.assignedTasks.filter((t) => t.id !== taskId) }
+            : m
+        );
+        setTeamMembers(updatedMembers);
+        // Update selected member if they are currently selected
+        if (selectedMember && selectedMember.id === memberId) {
+          const updatedSelectedMember = updatedMembers.find((m) => m.id === memberId);
+          if (updatedSelectedMember) {
+            setSelectedMember(updatedSelectedMember);
+          }
+        }
+        // Add task back to available tasks
+        setAvailableTasks((prev) => [...prev, taskToUnassign]);
+      }
     }
   };
 

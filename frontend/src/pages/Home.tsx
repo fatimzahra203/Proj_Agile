@@ -150,9 +150,13 @@ const Home: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {projects.map((project) => (
-                  <tr key={project.id} className="hover:bg-gray-50">
+                  <tr
+                    key={project.id}
+                    className="hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleViewDashboard(project.id)}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900 cursor-pointer" onClick={() => handleViewDashboard(project.id)}>
+                      <div className="font-medium text-gray-900">
                         {project.name}
                       </div>
                     </td>
@@ -168,17 +172,16 @@ const Home: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex -space-x-2">
                         {project.team.slice(0, 3).map((member, index) => (
-  <div 
-    key={member.id}
-    className="h-8 rounded-full bg-blue-400 border-2 border-white inline-flex items-center justify-center px-2"
-    title={member.username || 'Unknown'}
-  >
-    <span className="text-xs text-white font-medium truncate max-w-[100px]">
-      {member.username || 'N/A'}
-    </span>
-  </div>
-))}
-                
+                          <div 
+                            key={member.id}
+                            className="h-8 rounded-full bg-blue-400 border-2 border-white inline-flex items-center justify-center px-2"
+                            title={member.username || 'Unknown'}
+                          >
+                            <span className="text-xs text-white font-medium truncate max-w-[100px]">
+                              {member.username || 'N/A'}
+                            </span>
+                          </div>
+                        ))}
                         {project.team.length > 3 && (
                           <div className="h-8 w-8 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center">
                             <span className="text-xs text-gray-600 font-medium">
@@ -190,7 +193,10 @@ const Home: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
                       <button 
-                        onClick={() => handleMenuToggle(project.id)}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleMenuToggle(project.id);
+                        }}
                         className="text-gray-400 hover:text-gray-700"
                       >
                         <FiMoreVertical size={20} />
@@ -199,13 +205,19 @@ const Home: React.FC = () => {
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
                           <div className="py-1">
                             <button
-                              onClick={() => handleEditProject(project)}
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleEditProject(project);
+                              }}
                               className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                             >
                               <FiEdit2 className="mr-2" /> Edit Project
                             </button>
                             <button
-                              onClick={() => handleDeleteProject(project.id)}
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleDeleteProject(project.id);
+                              }}
                               className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
                             >
                               <FiTrash2 className="mr-2" /> Delete Project
