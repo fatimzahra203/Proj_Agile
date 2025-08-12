@@ -21,14 +21,41 @@ let TasksController = class TasksController {
     constructor(tasksService) {
         this.tasksService = tasksService;
     }
-    async create(createTaskDto) {
-        return this.tasksService.create(createTaskDto);
-    }
     async findAll(projectId) {
         if (projectId) {
             return this.tasksService.findByProject(projectId);
         }
         return this.tasksService.findAll();
+    }
+    async findUnassigned() {
+        try {
+            const tasks = await this.tasksService.findUnassigned();
+            if (!Array.isArray(tasks)) {
+                return [];
+            }
+            return tasks;
+        }
+        catch (error) {
+            console.error('Error in /tasks/unassigned:', error);
+            throw new common_1.BadRequestException('Failed to fetch unassigned tasks');
+        }
+    }
+    async findByProject(projectId) {
+        const numProjectId = Number(projectId);
+        if (isNaN(numProjectId)) {
+            throw new common_1.BadRequestException(`Invalid project id: ${projectId}`);
+        }
+        return this.tasksService.findByProject(numProjectId);
+    }
+    async findByAssignee(userId) {
+        const numUserId = Number(userId);
+        if (isNaN(numUserId)) {
+            throw new common_1.BadRequestException(`Invalid user id: ${userId}`);
+        }
+        return this.tasksService.findByAssignee(numUserId);
+    }
+    getTest() {
+        return { ok: true };
     }
     async findOne(id) {
         const numId = Number(id);
@@ -36,6 +63,12 @@ let TasksController = class TasksController {
             throw new common_1.BadRequestException(`Invalid task id: ${id}`);
         }
         return this.tasksService.findOne(numId);
+    }
+    async create(createTaskDtos) {
+        if (!Array.isArray(createTaskDtos)) {
+            throw new common_1.BadRequestException('Request body must be an array of tasks');
+        }
+        return Promise.all(createTaskDtos.map(dto => this.tasksService.create(dto)));
     }
     async update(id, updateTaskDto) {
         const numId = Number(id);
@@ -58,36 +91,6 @@ let TasksController = class TasksController {
         }
         return this.tasksService.updateStatus(numId, status);
     }
-    async findByProject(projectId) {
-        const numProjectId = Number(projectId);
-        if (isNaN(numProjectId)) {
-            throw new common_1.BadRequestException(`Invalid project id: ${projectId}`);
-        }
-        return this.tasksService.findByProject(numProjectId);
-    }
-    async findByAssignee(userId) {
-        const numUserId = Number(userId);
-        if (isNaN(numUserId)) {
-            throw new common_1.BadRequestException(`Invalid user id: ${userId}`);
-        }
-        return this.tasksService.findByAssignee(numUserId);
-    }
-    getTest() {
-        return { ok: true };
-    }
-    async findUnassigned() {
-        try {
-            const tasks = await this.tasksService.findUnassigned();
-            if (!Array.isArray(tasks)) {
-                return [];
-            }
-            return tasks;
-        }
-        catch (error) {
-            console.error('Error in /tasks/unassigned:', error);
-            throw new common_1.BadRequestException('Failed to fetch unassigned tasks');
-        }
-    }
     async assignTask(id, body) {
         const numId = Number(id);
         if (isNaN(numId)) {
@@ -105,13 +108,6 @@ let TasksController = class TasksController {
 };
 exports.TasksController = TasksController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.CreateTaskDto]),
-    __metadata("design:returntype", Promise)
-], TasksController.prototype, "create", null);
-__decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('projectId')),
     __metadata("design:type", Function),
@@ -119,12 +115,45 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.Get)('unassigned'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "findUnassigned", null);
+__decorate([
+    (0, common_1.Get)('project/:projectId'),
+    __param(0, (0, common_1.Param)('projectId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "findByProject", null);
+__decorate([
+    (0, common_1.Get)('assignee/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "findByAssignee", null);
+__decorate([
+    (0, common_1.Get)('test'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TasksController.prototype, "getTest", null);
+__decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "create", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -148,32 +177,6 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "updateStatus", null);
-__decorate([
-    (0, common_1.Get)('project/:projectId'),
-    __param(0, (0, common_1.Param)('projectId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], TasksController.prototype, "findByProject", null);
-__decorate([
-    (0, common_1.Get)('assignee/:userId'),
-    __param(0, (0, common_1.Param)('userId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], TasksController.prototype, "findByAssignee", null);
-__decorate([
-    (0, common_1.Get)('test'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], TasksController.prototype, "getTest", null);
-__decorate([
-    (0, common_1.Get)('unassigned'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], TasksController.prototype, "findUnassigned", null);
 __decorate([
     (0, common_1.Post)(':id/assign'),
     __param(0, (0, common_1.Param)('id')),

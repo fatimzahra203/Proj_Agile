@@ -7,11 +7,6 @@ import { CreateTaskDto, UpdateTaskDto, AssignTaskDto } from './dto';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Post()
-  async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.create(createTaskDto);
-  }
-
   @Get()
   async findAll(@Query('projectId') projectId?: number): Promise<Task[]> {
     if (projectId) {
@@ -20,8 +15,42 @@ export class TasksController {
     return this.tasksService.findAll();
   }
 
+  @Get('unassigned')
+  async findUnassigned() {
+    try {
+      const tasks = await this.tasksService.findUnassigned();
+      if (!Array.isArray(tasks)) {
+        return [];
+      }
+      return tasks;
+    } catch (error) {
+      console.error('Error in /tasks/unassigned:', error);
+      throw new BadRequestException('Failed to fetch unassigned tasks');
+    }
+  }
 
+  @Get('project/:projectId')
+  async findByProject(@Param('projectId') projectId: string): Promise<Task[]> {
+    const numProjectId = Number(projectId);
+    if (isNaN(numProjectId)) {
+      throw new BadRequestException(`Invalid project id: ${projectId}`);
+    }
+    return this.tasksService.findByProject(numProjectId);
+  }
 
+  @Get('assignee/:userId')
+  async findByAssignee(@Param('userId') userId: string): Promise<Task[]> {
+    const numUserId = Number(userId);
+    if (isNaN(numUserId)) {
+      throw new BadRequestException(`Invalid user id: ${userId}`);
+    }
+    return this.tasksService.findByAssignee(numUserId);
+  }
+
+  @Get('test')
+  getTest() {
+    return { ok: true };
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Task> {
@@ -32,9 +61,17 @@ export class TasksController {
     return this.tasksService.findOne(numId);
   }
 
+  @Post()
+async create(@Body() createTaskDtos: CreateTaskDto[]): Promise<Task[]> {
+  if (!Array.isArray(createTaskDtos)) {
+    throw new BadRequestException('Request body must be an array of tasks');
+  }
+  return Promise.all(createTaskDtos.map(dto => this.tasksService.create(dto)));
+}
+
   @Put(':id')
   async update(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto
   ): Promise<Task> {
     const numId = Number(id);
@@ -64,43 +101,6 @@ export class TasksController {
     }
     return this.tasksService.updateStatus(numId, status);
   }
-
-  @Get('project/:projectId')
-  async findByProject(@Param('projectId') projectId: string): Promise<Task[]> {
-    const numProjectId = Number(projectId);
-    if (isNaN(numProjectId)) {
-      throw new BadRequestException(`Invalid project id: ${projectId}`);
-    }
-    return this.tasksService.findByProject(numProjectId);
-  }
-
-  @Get('assignee/:userId')
-  async findByAssignee(@Param('userId') userId: string): Promise<Task[]> {
-    const numUserId = Number(userId);
-    if (isNaN(numUserId)) {
-      throw new BadRequestException(`Invalid user id: ${userId}`);
-    }
-    return this.tasksService.findByAssignee(numUserId);
-  }
-
-  @Get('test')
-  getTest() {
-    return { ok: true };
-  }
-
-  @Get('unassigned')
-async findUnassigned() {
-  try {
-    const tasks = await this.tasksService.findUnassigned(); 
-    if (!Array.isArray(tasks)) {
-      return [];
-    }
-    return tasks;
-  } catch (error) {
-    console.error('Error in /tasks/unassigned:', error);
-    throw new BadRequestException('Failed to fetch unassigned tasks');
-  }
-}
 
   @Post(':id/assign')
   async assignTask(@Param('id') id: string, @Body() body: AssignTaskDto) {
