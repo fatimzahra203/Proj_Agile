@@ -313,8 +313,11 @@ const TeamManagement: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-3">
-            <Link to="/" className="bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 px-3 py-1.5 text-sm rounded-lg shadow-sm">
+            <Link to="/home" className="bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 px-3 py-1.5 text-sm rounded-lg shadow-sm">
               Back to Projects
+            </Link>
+             <Link to="/dashboard" className="bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 px-3 py-1.5 text-sm rounded-lg shadow-sm">
+              Back to Dashboard
             </Link>
           </div>
         </div>
