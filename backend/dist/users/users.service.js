@@ -22,7 +22,39 @@ let UsersService = class UsersService {
         this.userRepository = userRepository;
     }
     async findByRole(role) {
-        return this.userRepository.find({ where: { role } });
+        const users = await this.userRepository.find({
+            where: { role },
+            relations: ['tasks'],
+        });
+        return users;
+    }
+    async findOne(id) {
+        const user = await this.userRepository.findOne({
+            where: { id },
+            relations: ['tasks'],
+        });
+        if (!user) {
+            throw new common_1.NotFoundException(`User with ID ${id} not found`);
+        }
+        return user;
+    }
+    async create(createUserDto) {
+        const { username, email, password, role } = createUserDto;
+        const existingUser = await this.userRepository.findOne({ where: { email } });
+        if (existingUser) {
+            throw new common_1.ConflictException('Email already exists');
+        }
+        const user = this.userRepository.create({ username, email, password, role });
+        return this.userRepository.save(user);
+    }
+    async update(id, updateUserDto) {
+        const user = await this.findOne(id);
+        Object.assign(user, updateUserDto);
+        return this.userRepository.save(user);
+    }
+    async remove(id) {
+        const user = await this.findOne(id);
+        await this.userRepository.remove(user);
     }
 };
 exports.UsersService = UsersService;

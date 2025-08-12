@@ -17,6 +17,7 @@ import { TasksModule } from './tasks/tasks.module';
   autoLoadEntities: true,
   synchronize: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
+  logging: ['query', 'error'],
 }),
 
     AuthModule,

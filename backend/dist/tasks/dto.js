@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateTaskDto = exports.CreateTaskDto = void 0;
+exports.AssignTaskDto = exports.UpdateTaskDto = exports.CreateTaskDto = void 0;
 const class_validator_1 = require("class-validator");
 const task_entity_1 = require("./task.entity");
 class CreateTaskDto {
@@ -76,4 +76,11 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], UpdateTaskDto.prototype, "assigneeId", void 0);
+class AssignTaskDto {
+}
+exports.AssignTaskDto = AssignTaskDto;
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], AssignTaskDto.prototype, "userId", void 0);
 //# sourceMappingURL=dto.js.map

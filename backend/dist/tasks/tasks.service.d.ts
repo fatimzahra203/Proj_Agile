@@ -17,4 +17,7 @@ export declare class TasksService {
     updateStatus(id: number, status: TaskStatus): Promise<Task>;
     findByProject(projectId: number): Promise<Task[]>;
     findByAssignee(userId: number): Promise<Task[]>;
+    findUnassigned(): Promise<Task[]>;
+    assignTask(taskId: number, userId: number): Promise<Task>;
+    unassignTask(taskId: number): Promise<Task>;
 }

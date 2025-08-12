@@ -123,10 +123,10 @@ let TasksService = class TasksService {
         if (!Object.values(task_entity_1.TaskStatus).includes(status)) {
             throw new common_1.NotFoundException(`Invalid status value: ${status}`);
         }
-        task.status = status;
-        const saved = await this.tasksRepository.save(task);
-        console.log(`Task ${id} status updated to:`, status);
-        return saved;
+        await this.tasksRepository.update(id, { status });
+        const updated = await this.findOne(id);
+        console.log(`Task ${id} status updated to:`, updated.status);
+        return updated;
     }
     async findByProject(projectId) {
         return this.tasksRepository.find({
@@ -139,6 +139,32 @@ let TasksService = class TasksService {
             where: { assignee: { id: userId } },
             relations: ['project'],
         });
+    }
+    async findUnassigned() {
+        return this.tasksRepository.find({
+            where: { assignee: null },
+            relations: ['project'],
+        });
+    }
+    async assignTask(taskId, userId) {
+        const task = await this.tasksRepository.findOne({ where: { id: taskId } });
+        if (!task) {
+            throw new common_1.NotFoundException(`Task with ID ${taskId} not found`);
+        }
+        const user = await this.usersRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new common_1.NotFoundException(`User with ID ${userId} not found`);
+        }
+        task.assignee = user;
+        return this.tasksRepository.save(task);
+    }
+    async unassignTask(taskId) {
+        const task = await this.tasksRepository.findOne({ where: { id: taskId } });
+        if (!task) {
+            throw new common_1.NotFoundException(`Task with ID ${taskId} not found`);
+        }
+        task.assignee = null;
+        return this.tasksRepository.save(task);
     }
 };
 exports.TasksService = TasksService;

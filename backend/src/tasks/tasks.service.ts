@@ -105,11 +105,9 @@ export class TasksService {
 
   async updateStatus(id: number, status: TaskStatus): Promise<Task> {
     const task = await this.findOne(id);
-    // Validate status
     if (!Object.values(TaskStatus).includes(status)) {
       throw new NotFoundException(`Invalid status value: ${status}`);
     }
-    // Force update in DB
     await this.tasksRepository.update(id, { status });
     const updated = await this.findOne(id);
     console.log(`Task ${id} status updated to:`, updated.status);
@@ -128,5 +126,34 @@ export class TasksService {
       where: { assignee: { id: userId } },
       relations: ['project'],
     });
+  }
+
+  async findUnassigned(): Promise<Task[]> {
+    return this.tasksRepository.find({
+      where: { assignee: null },
+      relations: ['project'],
+    });
+  }
+
+  async assignTask(taskId: number, userId: number): Promise<Task> {
+    const task = await this.tasksRepository.findOne({ where: { id: taskId } });
+    if (!task) {
+      throw new NotFoundException(`Task with ID ${taskId} not found`);
+    }
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    task.assignee = user;
+    return this.tasksRepository.save(task);
+  }
+
+  async unassignTask(taskId: number): Promise<Task> {
+    const task = await this.tasksRepository.findOne({ where: { id: taskId } });
+    if (!task) {
+      throw new NotFoundException(`Task with ID ${taskId} not found`);
+    }
+    task.assignee = null;
+    return this.tasksRepository.save(task);
   }
 }

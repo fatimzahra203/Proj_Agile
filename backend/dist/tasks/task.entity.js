@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", String)
 ], Task.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: TaskStatus, default: TaskStatus.TODO }),
+    (0, typeorm_1.Column)({ type: 'enum', enum: TaskStatus }),
     __metadata("design:type", String)
 ], Task.prototype, "status", void 0);
 __decorate([

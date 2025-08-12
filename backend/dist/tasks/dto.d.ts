@@ -15,3 +15,6 @@ export declare class UpdateTaskDto {
     projectId?: number;
     assigneeId?: number | null;
 }
+export declare class AssignTaskDto {
+    userId: number;
+}

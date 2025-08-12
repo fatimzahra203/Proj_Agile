@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, BadRequestException } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task, TaskStatus } from './task.entity';
-import { CreateTaskDto, UpdateTaskDto } from './dto';
+import { CreateTaskDto, UpdateTaskDto, AssignTaskDto } from './dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -20,9 +20,16 @@ export class TasksController {
     return this.tasksService.findAll();
   }
 
+
+
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Task> {
-    return this.tasksService.findOne(+id);
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      throw new BadRequestException(`Invalid task id: ${id}`);
+    }
+    return this.tasksService.findOne(numId);
   }
 
   @Put(':id')
@@ -30,12 +37,20 @@ export class TasksController {
     @Param('id') id: string, 
     @Body() updateTaskDto: UpdateTaskDto
   ): Promise<Task> {
-    return this.tasksService.update(+id, updateTaskDto);
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      throw new BadRequestException(`Invalid task id: ${id}`);
+    }
+    return this.tasksService.update(numId, updateTaskDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
-    return this.tasksService.remove(+id);
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      throw new BadRequestException(`Invalid task id: ${id}`);
+    }
+    return this.tasksService.remove(numId);
   }
 
   @Put(':id/status')
@@ -43,21 +58,65 @@ export class TasksController {
     @Param('id') id: string,
     @Body('status') status: TaskStatus
   ): Promise<Task> {
-    return this.tasksService.updateStatus(+id, status);
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      throw new BadRequestException(`Invalid task id: ${id}`);
+    }
+    return this.tasksService.updateStatus(numId, status);
   }
 
   @Get('project/:projectId')
   async findByProject(@Param('projectId') projectId: string): Promise<Task[]> {
-    return this.tasksService.findByProject(+projectId);
+    const numProjectId = Number(projectId);
+    if (isNaN(numProjectId)) {
+      throw new BadRequestException(`Invalid project id: ${projectId}`);
+    }
+    return this.tasksService.findByProject(numProjectId);
   }
 
   @Get('assignee/:userId')
   async findByAssignee(@Param('userId') userId: string): Promise<Task[]> {
-    return this.tasksService.findByAssignee(+userId);
+    const numUserId = Number(userId);
+    if (isNaN(numUserId)) {
+      throw new BadRequestException(`Invalid user id: ${userId}`);
+    }
+    return this.tasksService.findByAssignee(numUserId);
   }
 
   @Get('test')
   getTest() {
     return { ok: true };
+  }
+
+  @Get('unassigned')
+async findUnassigned() {
+  try {
+    const tasks = await this.tasksService.findUnassigned(); 
+    if (!Array.isArray(tasks)) {
+      return [];
+    }
+    return tasks;
+  } catch (error) {
+    console.error('Error in /tasks/unassigned:', error);
+    throw new BadRequestException('Failed to fetch unassigned tasks');
+  }
+}
+
+  @Post(':id/assign')
+  async assignTask(@Param('id') id: string, @Body() body: AssignTaskDto) {
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      throw new BadRequestException(`Invalid task id: ${id}`);
+    }
+    return this.tasksService.assignTask(numId, body.userId);
+  }
+
+  @Post(':id/unassign')
+  async unassignTask(@Param('id') id: string) {
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      throw new BadRequestException(`Invalid task id: ${id}`);
+    }
+    return this.tasksService.unassignTask(numId);
   }
 }

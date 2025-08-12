@@ -24,6 +24,7 @@ exports.ProjectsModule = ProjectsModule = __decorate([
         ],
         controllers: [projects_controller_1.ProjectsController],
         providers: [projects_service_1.ProjectsService],
+        exports: [typeorm_1.TypeOrmModule],
     })
 ], ProjectsModule);
 //# sourceMappingURL=projects.module.js.map

@@ -21,7 +21,27 @@ let UsersController = class UsersController {
         this.usersService = usersService;
     }
     async findByRole(role) {
+        if (!role || !Object.values(user_entity_1.UserRole).includes(role)) {
+            throw new common_1.BadRequestException(`Invalid or missing role: ${role || 'not provided'}`);
+        }
         return this.usersService.findByRole(role);
+    }
+    async create(createUserDto) {
+        return this.usersService.create(createUserDto);
+    }
+    async update(id, updateUserDto) {
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid user id: ${id}`);
+        }
+        return this.usersService.update(numId, updateUserDto);
+    }
+    async remove(id) {
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid user id: ${id}`);
+        }
+        return this.usersService.remove(numId);
     }
 };
 exports.UsersController = UsersController;
@@ -32,6 +52,28 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findByRole", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "create", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "remove", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

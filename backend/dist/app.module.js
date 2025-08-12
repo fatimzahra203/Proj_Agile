@@ -29,6 +29,7 @@ exports.AppModule = AppModule = __decorate([
                 autoLoadEntities: true,
                 synchronize: true,
                 entities: ['dist/**/*.entity{.ts,.js}'],
+                logging: ['query', 'error'],
             }),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,

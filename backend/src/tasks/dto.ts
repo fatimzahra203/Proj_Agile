@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsNumber, IsInt } from 'class-validator';
 import { TaskStatus } from './task.entity';
 
 export class CreateTaskDto {
@@ -49,4 +49,9 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsNumber()
   assigneeId?: number | null;
+}
+
+export class AssignTaskDto {
+  @IsInt()
+  userId: number;
 }

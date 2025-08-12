@@ -1,6 +1,6 @@
 import { TasksService } from './tasks.service';
 import { Task, TaskStatus } from './task.entity';
-import { CreateTaskDto, UpdateTaskDto } from './dto';
+import { CreateTaskDto, UpdateTaskDto, AssignTaskDto } from './dto';
 export declare class TasksController {
     private readonly tasksService;
     constructor(tasksService: TasksService);
@@ -15,4 +15,7 @@ export declare class TasksController {
     getTest(): {
         ok: boolean;
     };
+    findUnassigned(): Promise<Task[]>;
+    assignTask(id: string, body: AssignTaskDto): Promise<Task>;
+    unassignTask(id: string): Promise<Task>;
 }

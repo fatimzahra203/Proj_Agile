@@ -31,25 +31,76 @@ let TasksController = class TasksController {
         return this.tasksService.findAll();
     }
     async findOne(id) {
-        return this.tasksService.findOne(+id);
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid task id: ${id}`);
+        }
+        return this.tasksService.findOne(numId);
     }
     async update(id, updateTaskDto) {
-        return this.tasksService.update(+id, updateTaskDto);
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid task id: ${id}`);
+        }
+        return this.tasksService.update(numId, updateTaskDto);
     }
     async remove(id) {
-        return this.tasksService.remove(+id);
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid task id: ${id}`);
+        }
+        return this.tasksService.remove(numId);
     }
     async updateStatus(id, status) {
-        return this.tasksService.updateStatus(+id, status);
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid task id: ${id}`);
+        }
+        return this.tasksService.updateStatus(numId, status);
     }
     async findByProject(projectId) {
-        return this.tasksService.findByProject(+projectId);
+        const numProjectId = Number(projectId);
+        if (isNaN(numProjectId)) {
+            throw new common_1.BadRequestException(`Invalid project id: ${projectId}`);
+        }
+        return this.tasksService.findByProject(numProjectId);
     }
     async findByAssignee(userId) {
-        return this.tasksService.findByAssignee(+userId);
+        const numUserId = Number(userId);
+        if (isNaN(numUserId)) {
+            throw new common_1.BadRequestException(`Invalid user id: ${userId}`);
+        }
+        return this.tasksService.findByAssignee(numUserId);
     }
     getTest() {
         return { ok: true };
+    }
+    async findUnassigned() {
+        try {
+            const tasks = await this.tasksService.findUnassigned();
+            if (!Array.isArray(tasks)) {
+                return [];
+            }
+            return tasks;
+        }
+        catch (error) {
+            console.error('Error in /tasks/unassigned:', error);
+            throw new common_1.BadRequestException('Failed to fetch unassigned tasks');
+        }
+    }
+    async assignTask(id, body) {
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid task id: ${id}`);
+        }
+        return this.tasksService.assignTask(numId, body.userId);
+    }
+    async unassignTask(id) {
+        const numId = Number(id);
+        if (isNaN(numId)) {
+            throw new common_1.BadRequestException(`Invalid task id: ${id}`);
+        }
+        return this.tasksService.unassignTask(numId);
     }
 };
 exports.TasksController = TasksController;
@@ -117,6 +168,27 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TasksController.prototype, "getTest", null);
+__decorate([
+    (0, common_1.Get)('unassigned'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "findUnassigned", null);
+__decorate([
+    (0, common_1.Post)(':id/assign'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, dto_1.AssignTaskDto]),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "assignTask", null);
+__decorate([
+    (0, common_1.Post)(':id/unassign'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "unassignTask", null);
 exports.TasksController = TasksController = __decorate([
     (0, common_1.Controller)('tasks'),
     __metadata("design:paramtypes", [tasks_service_1.TasksService])
