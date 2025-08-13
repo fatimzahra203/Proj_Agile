@@ -197,8 +197,10 @@ const KanbanBoard: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
-    // Fetch tasks
-    fetch('http://localhost:3001/api/tasks')
+    // Only fetch tasks if project is set
+    if (!project || !project.id) return;
+    // Fetch only tasks for the selected project
+    fetch(`http://localhost:3001/api/tasks?projectId=${project.id}`)
       .then(res => res.json())
       .then(data => {
         // Map backend tasks to Kanban columns
@@ -227,7 +229,7 @@ const KanbanBoard: React.FC = () => {
       .then(data => {
         setTeamMembers(data);
       });
-  }, []);
+  }, [project]);
 
   // Find active task when dragging
   const activeTask = activeId ? tasks.find(task => task.id === activeId) : null;
@@ -261,13 +263,6 @@ const KanbanBoard: React.FC = () => {
     // Check if we have project data in the location state
     if (location.state?.projectData) {
       setProject(location.state.projectData);
-      
-      // If we had actual API, we would fetch project-specific tasks here
-      // For now, just simulate project-specific tasks
-      if (location.state.projectData.id) {
-        // This would be an API call in a real app
-        // setTasks(fetchedTasks);
-      }
     }
   }, [location]);
   
