@@ -22,10 +22,12 @@ export class ProjectsController {
     return { message: `Project with ID ${id} deleted successfully` };
   }
 
+
   @Get(':id')
-async findOne(@Param('id', ParseIntPipe) id: number) {
-  return this.projectsService.findOne(id);
-}
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    // The service should return the project with team and each team member's tasks using TypeORM relations
+    return this.projectsService.findOne(id);
+  }
 
   @Put(':id')
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateProjectDto: CreateProjectDto) {

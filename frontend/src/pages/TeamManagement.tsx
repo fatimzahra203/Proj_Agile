@@ -55,31 +55,45 @@ const TeamManagement: React.FC = () => {
   });
   const [selectedTaskId, setSelectedTaskId] = useState('');
 
+  // Set project from location on mount
   useEffect(() => {
     if (location.state?.projectData) {
       setProject(location.state.projectData);
     }
+  }, [location]);
+
+  // Fetch team members and tasks only after project is set
+  useEffect(() => {
+    if (!project) return;
 
     const fetchTeamMembers = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/users?role=member`);
-        if (!Array.isArray(response.data)) {
-          throw new Error('Unexpected response format: data is not an array');
+        if (Array.isArray(project.team)) {
+          const members: TeamMember[] = project.team.map((user: any) => ({
+            id: user.id?.toString(),
+            name: user.username || user.name || user.email || `User ${user.id}`,
+            role: user.role,
+            email: user.email,
+            assignedTasks: (user.tasks || [])
+              .filter((task: any) => {
+                // Only include tasks for the current project
+                return (
+                  (task.project?.id?.toString() === project.id?.toString()) ||
+                  (task.projectId?.toString() === project.id?.toString())
+                );
+              })
+              .map((task: any) => ({
+                id: task.id.toString(),
+                title: task.title,
+                status: task.status,
+                dueDate: task.dueDate,
+              })),
+          }));
+          setTeamMembers(members);
+        } else {
+          setTeamMembers([]);
         }
-        const members: TeamMember[] = response.data.map((user: any) => ({
-          id: user.id.toString(),
-          name: user.username,
-          role: user.role,
-          email: user.email,
-          assignedTasks: (user.tasks || []).map((task: any) => ({
-            id: task.id.toString(),
-            title: task.title,
-            status: task.status,
-            dueDate: task.dueDate,
-          })),
-        }));
-        setTeamMembers(members);
       } catch (error: any) {
         console.error('Error fetching team members:', error);
         const backendMsg = error.response?.data?.message;
@@ -93,20 +107,26 @@ const TeamManagement: React.FC = () => {
 
     const fetchAvailableTasks = async () => {
       setIsLoading(true);
-      if (!project) return;
       try {
-        const response = await axios.get(`${API_BASE_URL}/tasks/unassigned`, {
-      params: { projectId: project.id },
-    });
+        // Fetch all unassigned tasks, then filter by projectId client-side
+        const response = await axios.get(`${API_BASE_URL}/tasks/unassigned`);
         if (!Array.isArray(response.data)) {
           throw new Error('Unexpected response format: data is not an array');
         }
-        const tasks: Task[] = response.data.map((task: any) => ({
-          id: task.id.toString(),
-          title: task.title,
-          status: task.status,
-          dueDate: task.dueDate,
-        }));
+        const tasks: Task[] = response.data
+          .filter((task: any) => {
+            // Only include tasks for the current project
+            return (
+              (task.project?.id?.toString() === project.id?.toString()) ||
+              (task.projectId?.toString() === project.id?.toString())
+            );
+          })
+          .map((task: any) => ({
+            id: task.id.toString(),
+            title: task.title,
+            status: task.status,
+            dueDate: task.dueDate,
+          }));
         setAvailableTasks(tasks);
       } catch (error: any) {
         console.error('Error fetching tasks:', error);
@@ -121,7 +141,7 @@ const TeamManagement: React.FC = () => {
 
     fetchTeamMembers();
     fetchAvailableTasks();
-  }, [location]);
+  }, [project]);
 
   const handleAddMember = async () => {
     if (!newMember.name || !newMember.email || !newMember.password) {

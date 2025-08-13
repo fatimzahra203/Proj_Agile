@@ -313,8 +313,7 @@ const Dashboard = () => {
               <div className="flex justify-center">
                 <div className="grid grid-cols-3 gap-6 max-w-2xl">
                   <Link 
-                    to="/calendar" 
-                    state={{ projectData: project }}
+                    to={project ? `/calendar?projectId=${project.id}` : '/calendar'}
                     className="bg-blue-500 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center hover:bg-blue-600 transition"
                   >
                     <FiCalendar size={28} className="mb-2" />

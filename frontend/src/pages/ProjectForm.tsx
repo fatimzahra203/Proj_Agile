@@ -258,17 +258,20 @@ const ProjectForm = ({ mode = 'create' }: { mode?: 'create' | 'edit' }) => {
       const updatedTasks = tasks.filter((t: any) => t.id);
       const removedTaskIds = existingTaskIds.filter((id: number) => !tasks.some((t: any) => t.id === id));
 
-      // Create new tasks
-      const createPromises = newTasks.map(task =>
-        fetch('http://localhost:3001/api/tasks', {
+
+      // Create new tasks (send as array in one request)
+      let createResult: Response | null = null;
+      if (newTasks.length > 0) {
+        const payload = newTasks.map(task => ({
+          ...task,
+          projectId: createdProjectId
+        }));
+        createResult = await fetch('http://localhost:3001/api/tasks', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...task,
-            projectId: createdProjectId
-          }),
-        })
-      );
+          body: JSON.stringify(payload),
+        });
+      }
 
       // Update existing tasks
       const updatePromises = updatedTasks.map(task => {
@@ -295,9 +298,10 @@ const ProjectForm = ({ mode = 'create' }: { mode?: 'create' | 'edit' }) => {
         })
       );
 
-      // Run all requests
-      const results = await Promise.all([...createPromises, ...updatePromises, ...deletePromises]);
-      const failedTasks = results.filter(r => !r.ok).length;
+      // Run update and delete requests
+      const updateAndDeleteResults = await Promise.all([...updatePromises, ...deletePromises]);
+      let failedTasks = updateAndDeleteResults.filter(r => !r.ok).length;
+      if (createResult && !createResult.ok) failedTasks += 1;
 
       if (failedTasks > 0) {
         toast.warning(`${failedTasks} tasks failed to save. Please try again.`);

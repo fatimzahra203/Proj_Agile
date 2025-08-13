@@ -131,7 +131,7 @@ let TasksService = class TasksService {
     async findByProject(projectId) {
         return this.tasksRepository.find({
             where: { project: { id: projectId } },
-            relations: ['assignee'],
+            relations: ['assignee', 'project'],
         });
     }
     async findByAssignee(userId) {

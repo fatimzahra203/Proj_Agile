@@ -149,12 +149,15 @@ useEffect(() => {
     try {
       let fetchedTasks: Task[] = [];
 
-      if (userId) {
-        fetchedTasks = await fetchTasksByAssignee(userId);
-      } else if (projectId) {
+      if (projectId) {
+        // Always fetch only tasks for the current project
         fetchedTasks = await fetchTasks(projectId);
+      } else if (userId) {
+        // If no projectId, fallback to user
+        fetchedTasks = await fetchTasksByAssignee(userId);
       } else {
-        fetchedTasks = await fetchUnassignedTasks();
+        // If neither, show nothing
+        fetchedTasks = [];
       }
 
       console.log('Fetched Tasks:', fetchedTasks);
@@ -187,6 +190,8 @@ useEffect(() => {
   };
 
   loadTasks();
+  console.log('Current URL:', window.location.href);
+  console.log('projectId:', projectId, 'userId:', userId);
 }, [projectId, userId, currentDate]);
 
   return (

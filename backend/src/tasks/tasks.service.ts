@@ -117,7 +117,7 @@ export class TasksService {
   async findByProject(projectId: number): Promise<Task[]> {
     return this.tasksRepository.find({
       where: { project: { id: projectId } },
-      relations: ['assignee'],
+      relations: ['assignee', 'project'],
     });
   }
 
